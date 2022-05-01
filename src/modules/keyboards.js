@@ -3,44 +3,61 @@
 import { Markup } from 'telegraf';
 import { PRODUCTS } from './test-products.js';
 
-function createTypesKeyboard(products) {
-    const productTypesList = [];
-    for (const type in products) {
-        console.log(type)
-        productTypesList.push(products[type].ukrainianName);
+function getUkrainianNames(productsObject) {
+    const typesList = [];
+    for (const type in productsObject) {
+        typesList.push(productsObject[type].ukrainianName);
     }
-    console.log(productTypesList)
-    const len = productTypesList.length;
-    const keyboard = [];
 
-    if (len % 2 === 0) {
-        for (let i = 0; i < len; i += 2) {
-            const currentType = productTypesList[i];
-            const nextType = productTypesList[i + 1];
-            keyboard.push([ 
-                Markup.button.callback(currentType, currentType), 
-                Markup.button.callback(nextType, nextType) 
-            ]);
-        }
-    } else {
-        const lastType = productTypesList[len - 1];
-        for (let i = 0; i < len - 1; i += 2) {
-            keyboard.push([ 
-                Markup.button.callback(currentType, currentType), 
-                Markup.button.callback(nextType, nextType) 
-            ]);
-        }
-        keyboard.push([
-            Markup.button.callback(lastType, lastType)
+    return typesList;
+}
+
+function oddNumberTypes(typesList) {
+    const keyboardArray = [];
+
+    const len = typesList.length;
+    const lastType = typesList[len - 1];
+    for (let i = 0; i < len - 1; i += 2) {
+        keyboardArray.push([ 
+            Markup.button.callback(currentType, currentType), 
+            Markup.button.callback(nextType, nextType) 
+        ]);
+    }
+    keyboardArray.push([
+        Markup.button.callback(lastType, lastType)
+    ]);
+
+    return keyboardArray;
+}
+
+function evenNumberTypes(typesList) {
+    const keyboardArray = [];
+
+    const len = typesList.length;
+    for (let i = 0; i < len; i += 2) {
+        const currentType = typesList[i];
+        const nextType = typesList[i + 1];
+        keyboardArray.push([ 
+            Markup.button.callback(currentType, currentType), 
+            Markup.button.callback(nextType, nextType) 
         ]);
     }
 
-    return keyboard;
+    return keyboardArray;
 }
 
-export const productTypesKeyboard = Markup.inlineKeyboard(
-    createTypesKeyboard(PRODUCTS)
-);
+function createTypesKeyboard(productsObject) {
+    const typesList = getUkrainianNames(productsObject);
+    const len = typesList.length;
+    const keyboardArray = (len % 2 === 0 ?
+        evenNumberTypes(typesList) :
+        oddNumberTypes(typesList));
+    
+    console.log(keyboardArray);
+    return Markup.inlineKeyboard(keyboardArray);
+}
+
+export const productTypesKeyboard = createTypesKeyboard(PRODUCTS);
 
 export const insecticidesKeyboard = Markup.inlineKeyboard([
     [
