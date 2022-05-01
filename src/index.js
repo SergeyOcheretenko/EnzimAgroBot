@@ -1,9 +1,10 @@
 'use strict';
 
 import { Telegraf, Scenes, session } from 'telegraf';
-import CONFIG from '../CONFIG.json' assert { type: "json" };
+import { parseJSON } from './modules/work-with-json.js';
 import { checkProductPriceScene } from './modules/user-functionality.js';
 
+const CONFIG = parseJSON('CONFIG.json');
 const BOT_TOKEN = CONFIG.bot_token;
 
 const bot = new Telegraf(BOT_TOKEN);
