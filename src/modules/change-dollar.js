@@ -3,8 +3,8 @@
 import { parseJSON, updateJSON } from "./work-with-json.js";
 import { Scenes, Composer } from 'telegraf';
 
-function checkIsNumber(text) {
-    return /^[0-9]+$/.test(text);
+function checkIsNumber(str) {
+    return (!isNaN(str) && !isNaN(parseFloat(str)));
 }
 
 const startChangeDollarScene = new Composer();
@@ -15,12 +15,12 @@ startChangeDollarScene.on('text', async (ctx) => {
 
 const changeDollarRate = new Composer();
 changeDollarRate.on('text', async (ctx) => {
-    const dollarRate = await ctx.message.text;
+    const dollarRate = await ctx.message.text.replace(',', '.');
     if (checkIsNumber(dollarRate)) {
-        updateJSON('src/json/dollar-rate.json', { dollarRate });
-        ctx.reply('Значення змінено')
+        await updateJSON('src/json/dollar-rate.json', { dollarRate });
+        await ctx.reply('Значення змінено')
     } else {
-        ctx.reply('Введено некоректне значення');
+        await ctx.reply('Введено некоректне значення');
     }
     return ctx.scene.leave();
 });

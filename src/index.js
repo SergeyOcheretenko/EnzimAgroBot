@@ -17,9 +17,12 @@ const stage = new Scenes.Stage([
     checkProductPriceScene,
     changeDollarScene
 ]);
+
 bot.use(session(), stage.middleware());
 
-bot.command('start', (ctx) => {
+bot.command('start', (ctx) => ctx.reply('Start'));
+
+bot.command('price', (ctx) => {
     ctx.scene.enter('checkProductPriceScene');
 });
 
