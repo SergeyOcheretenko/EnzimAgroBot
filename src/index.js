@@ -1,16 +1,12 @@
 'use strict';
 
-import { Telegraf, Composer, Scenes, session } from 'telegraf';
-import CONFIG from '../CONFIG.json' assert { type: "json" }; 
-import * as keyboards from './modules/keyboards.js';
+import { Telegraf, session } from 'telegraf';
+import CONFIG from '../CONFIG.json' assert { type: "json" };
+import { sendHelp } from './modules/user-functionality.js';
 
 const BOT_TOKEN = CONFIG.bot_token;
 
 const bot = new Telegraf(BOT_TOKEN);
-
-function sendHelp(ctx) {
-    ctx.reply('Help for using the system');
-}
 
 bot.command('start', (ctx) => {
     ctx.reply('Start');
