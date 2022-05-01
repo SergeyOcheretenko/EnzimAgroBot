@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node src/index.js",
+    "start": "node --experimental-json-modules src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/SergeyOcheretenko/EnzimAgroBot/issues"
   },
-  "homepage": "https://github.com/SergeyOcheretenko/EnzimAgroBot#readme"
+  "homepage": "https://github.com/SergeyOcheretenko/EnzimAgroBot#readme",
+  "dependencies": {
+    "telegraf": "^4.8.1"
+  }
 }
