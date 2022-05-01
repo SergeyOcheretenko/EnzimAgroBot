@@ -1,2 +1,4 @@
-# EnzimAgroBot
-Bot that tracks the prices of Enzim Agro products.
+# EnzimAgro Bot
+
+### Context
+Проект для автоматизації надання цін на продукцію організації [Enzim Agro](https://agro.enzim.biz/), створений для **полегшення процесу пошуку цін** для користувача(клієнта).
