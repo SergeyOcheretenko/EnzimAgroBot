@@ -1,38 +1,20 @@
 'use strict';
 
-import { Telegraf, Composer, Markup, Scenes, session } from 'telegraf';
-import CONFIG from '../CONFIG.json' assert { type: "json" }; 
+import { Telegraf, Scenes, session } from 'telegraf';
+import CONFIG from '../CONFIG.json' assert { type: "json" };
+import { checkProductPriceScene } from './modules/user-functionality.js';
 
 const BOT_TOKEN = CONFIG.bot_token;
 
 const bot = new Telegraf(BOT_TOKEN);
 
-const productTypesKeyboard = Markup.inlineKeyboard([
-    [
-        Markup.button.callback('Інсектициди', 'Insecticides'),
-        Markup.button.callback('Фунгіциди', 'Fungicides')
-    ],
-    [
-        Markup.button.callback('Complex additives', 'ComplexAdditives'),
-        Markup.button.callback('Інокулянти', 'Annoculants')
-    ],
-    [
-        Markup.button.callback('Стимулятори росту', 'GrowthStimulators'),
-        Markup.button.callback('Покращувачі грунту', 'SoilImprovers')
-    ],
-    [
-        Markup.button.callback('Відміна', 'Cancel')
-    ]
-]);
+bot.command('help', (ctx) => ctx.reply('Help for using the system'));
 
-function sendHelp(ctx) {
-    ctx.reply('Help for using the system');
-}
+const stage = new Scenes.Stage([checkProductPriceScene]);
+bot.use(session(), stage.middleware());
 
 bot.command('start', (ctx) => {
-    ctx.reply('Start');
+    ctx.scene.enter('checkProductPriceScene');
 });
-
-bot.command('help', (ctx) => sendHelp(ctx));
 
 bot.launch();
