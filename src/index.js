@@ -1,17 +1,20 @@
 'use strict';
 
-import { Telegraf, session } from 'telegraf';
+import { Telegraf, Scenes, session } from 'telegraf';
 import CONFIG from '../CONFIG.json' assert { type: "json" };
-import { sendHelp } from './modules/user-functionality.js';
+import { checkProductPriceScene } from './modules/user-functionality.js';
 
 const BOT_TOKEN = CONFIG.bot_token;
 
 const bot = new Telegraf(BOT_TOKEN);
 
-bot.command('start', (ctx) => {
-    ctx.reply('Start');
-});
+bot.command('help', (ctx) => ctx.reply('Help for using the system'));
 
-bot.command('help', (ctx) => sendHelp(ctx));
+const stage = new Scenes.Stage([checkProductPriceScene]);
+bot.use(session(), stage.middleware());
+
+bot.command('start', (ctx) => {
+    ctx.scene.enter('checkProductPriceScene');
+});
 
 bot.launch();
