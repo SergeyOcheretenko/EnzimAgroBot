@@ -53,7 +53,6 @@ function createTypesKeyboard(productsObject) {
         evenNumberTypes(typesList) :
         oddNumberTypes(typesList));
     
-    console.log(keyboardArray);
     return Markup.inlineKeyboard(keyboardArray);
 }
 
