@@ -1,0 +1,24 @@
+{
+  "name": "enzimagrobot",
+  "version": "1.0.0",
+  "description": "bot that tracks the prices of Enzom Agro products",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node --experimental-json-modules src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SergeyOcheretenko/EnzimAgroBot.git"
+  },
+  "author": "Sergey Ocheretenko",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SergeyOcheretenko/EnzimAgroBot/issues"
+  },
+  "homepage": "https://github.com/SergeyOcheretenko/EnzimAgroBot#readme",
+  "dependencies": {
+    "telegraf": "^4.8.1"
+  }
+}
