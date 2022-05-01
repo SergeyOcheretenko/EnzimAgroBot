@@ -7,7 +7,7 @@ function parseJSON(path) {
     return data;
 }
 
-function updateJSON(data, path) {
+function updateJSON(path, data) {
     const formattedData = JSON.stringify(data);
     fs.writeFileSync(path, formattedData);
     return;
