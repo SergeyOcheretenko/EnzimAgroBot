@@ -18,7 +18,8 @@ changeDollarRate.on('text', async (ctx) => {
     const dollarRate = await ctx.message.text.replace(',', '.');
     if (checkIsNumber(dollarRate)) {
         await updateJSON('src/json/dollar-rate.json', { dollarRate });
-        await ctx.reply('Значення змінено')
+        const updatedDollarRate = await parseJSON('src/json/dollar-rate.json').dollarRate;
+        await ctx.reply(`Значення змінено.\n\nПоточний курс USD: ${updatedDollarRate} грн.`)
     } else {
         await ctx.reply('Введено некоректне значення');
     }

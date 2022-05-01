@@ -33,4 +33,9 @@ bot.command('change_dollar', async (ctx) => {
     }
 });
 
+bot.command('dollar_rate', async (ctx) => {
+    const dollarRate = await parseJSON('src/json/dollar-rate.json').dollarRate;
+    await ctx.reply(`Поточний курс USD: ${dollarRate} грн.`)
+});
+
 bot.launch();
