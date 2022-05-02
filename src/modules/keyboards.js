@@ -18,6 +18,8 @@ function oddNumberTypes(typesList) {
     const len = typesList.length;
     const lastType = typesList[len - 1];
     for (let i = 0; i < len - 1; i += 2) {
+        const currentType = typesList[i];
+        const nextType = typesList[i + 1];
         keyboardArray.push([ 
             Markup.button.callback(currentType, currentType), 
             Markup.button.callback(nextType, nextType) 
