@@ -2,7 +2,7 @@
 
 import { Telegraf, Scenes, session } from 'telegraf';
 import { parseJSON } from './modules/work-with-json.js';
-import { checkProductPriceScene } from './modules/user-functionality.js';
+import { checkProductPriceScene } from './modules/check-price.js';
 import { getAdmins } from './modules/admins-list.js';
 import { changeDollarScene } from './modules/change-dollar.js';
 
