@@ -4,7 +4,8 @@ import { Markup } from 'telegraf';
 
 import { getXlsxData } from './parse-xlsx.js'
 
-function getTypesList(xlsxData) {
+export function getTypesList() {
+    const xlsxData = getXlsxData();
     const types = [];
     for (const productTypeObject of xlsxData) {
         types.push(productTypeObject.productType);
@@ -49,8 +50,7 @@ function evenNumberTypes(typesList) {
 }
 
 export function createTypesKeyboard() {
-    const xlsxData = getXlsxData();
-    const typesList = getTypesList(xlsxData);
+    const typesList = getTypesList();
 
     const len = typesList.length;
     const keyboardArray = (len % 2 === 0 ?
@@ -70,48 +70,27 @@ export const insecticidesKeyboard = Markup.inlineKeyboard([
         Markup.button.callback('Товар 4', 'product4')
     ],
     [
-        Markup.button.callback('Відміна', 'Cancel')
+        Markup.button.callback('Назад', 'Cancel')
     ]
 ]);
 
-export const fungicidesKeyboard = Markup.inlineKeyboard([
-    [
-        Markup.button.callback('Товар 1', 'product1'),
-        Markup.button.callback('Товар 2', 'product2')
-    ],
-    [
-        Markup.button.callback('Товар 3', 'product3'),
-        Markup.button.callback('Товар 4', 'product4')
-    ],
-    [
-        Markup.button.callback('Відміна', 'Cancel')
-    ]
-]);
+export function createProductsKeyboards() {
+    const keyboardsByTypes = {};
+    for (const type of getTypesList()) {
+        keyboardsByTypes[type] = Markup.inlineKeyboard([
+            [
+                Markup.button.callback('Товар 1', 'product1'),
+                Markup.button.callback('Товар 2', 'product2')
+            ],
+            [
+                Markup.button.callback('Товар 3', 'product3'),
+                Markup.button.callback('Товар 4', 'product4')
+            ],
+            [
+                Markup.button.callback('Відміна', 'Cancel')
+            ]
+        ]);
+    }
 
-export const complexAdditivesKeyboard = Markup.inlineKeyboard([
-    [
-        Markup.button.callback('Товар 1', 'product1'),
-        Markup.button.callback('Товар 2', 'product2')
-    ],
-    [
-        Markup.button.callback('Товар 3', 'product3'),
-        Markup.button.callback('Товар 4', 'product4')
-    ],
-    [
-        Markup.button.callback('Відміна', 'Cancel')
-    ]
-]);
-
-export const annoculantsKeyboard = Markup.inlineKeyboard([
-    [
-        Markup.button.callback('Товар 1', 'product1'),
-        Markup.button.callback('Товар 2', 'product2')
-    ],
-    [
-        Markup.button.callback('Товар 3', 'product3'),
-        Markup.button.callback('Товар 4', 'product4')
-    ],
-    [
-        Markup.button.callback('Відміна', 'Cancel')
-    ]
-]);
+    return keyboardsByTypes;
+}
