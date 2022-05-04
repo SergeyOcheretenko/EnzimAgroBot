@@ -1,15 +1,15 @@
 'use strict';
 
 import { Markup } from 'telegraf';
-import { PRODUCTS } from './test-products.js';
 
-function getUkrainianNames(productsObject) {
-    const typesList = [];
-    for (const type in productsObject) {
-        typesList.push(productsObject[type].ukrainianName);
+import { getXlsxData } from './parse-xlsx.js'
+
+function getTypesList(xlsxData) {
+    const types = [];
+    for (const productTypeObject of xlsxData) {
+        types.push(productTypeObject.productType);
     }
-
-    return typesList;
+    return types;
 }
 
 function oddNumberTypes(typesList) {
@@ -48,8 +48,10 @@ function evenNumberTypes(typesList) {
     return keyboardArray;
 }
 
-function createTypesKeyboard(productsObject) {
-    const typesList = getUkrainianNames(productsObject);
+export function createTypesKeyboard() {
+    const xlsxData = getXlsxData();
+    const typesList = getTypesList(xlsxData);
+
     const len = typesList.length;
     const keyboardArray = (len % 2 === 0 ?
         evenNumberTypes(typesList) :
@@ -57,8 +59,6 @@ function createTypesKeyboard(productsObject) {
     
     return Markup.inlineKeyboard(keyboardArray);
 }
-
-export const productTypesKeyboard = createTypesKeyboard(PRODUCTS);
 
 export const insecticidesKeyboard = Markup.inlineKeyboard([
     [

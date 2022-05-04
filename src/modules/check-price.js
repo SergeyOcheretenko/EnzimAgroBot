@@ -1,12 +1,13 @@
 'use strict';
 
 import { Scenes, Composer } from 'telegraf';
+
 import * as keyboards from './keyboards.js';
 
 const startCheckPriceScene = new Composer();
 startCheckPriceScene.on('text', async (ctx) => {
     await ctx.reply('Оберіть категорію продукту:',
-        keyboards.productTypesKeyboard);
+        keyboards.createTypesKeyboard());
     return ctx.wizard.next();
 });
 

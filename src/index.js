@@ -1,9 +1,11 @@
 'use strict';
 
 import { Telegraf, Scenes, session } from 'telegraf';
+
 import { parseJSON } from './modules/work-with-json.js';
-import { checkProductPriceScene } from './modules/check-price.js';
 import { getAdmins } from './modules/admins-list.js';
+
+import { checkProductPriceScene } from './modules/check-price.js';
 import { changeDollarScene } from './modules/change-dollar.js';
 
 const CONFIG = parseJSON('CONFIG.json');
