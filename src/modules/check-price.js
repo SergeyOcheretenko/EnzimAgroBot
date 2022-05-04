@@ -4,10 +4,15 @@ import { Scenes, Composer } from 'telegraf';
 
 import * as keyboards from './keyboards.js';
 
-const startCheckPriceScene = new Composer();
-startCheckPriceScene.on('text', async (ctx) => {
+async function sendCategories(ctx) {
     await ctx.reply('Оберіть категорію продукту:',
         keyboards.createTypesKeyboard());
+    return;
+}
+
+const startCheckPriceScene = new Composer();
+startCheckPriceScene.on('text', async (ctx) => {
+    sendCategories(ctx);
     return ctx.wizard.next();
 });
 
@@ -19,10 +24,6 @@ for (const type of keyboards.getTypesList()) {
         return ctx.wizard.next();
     });
 }
-
-selectProduct.action('Cancel', async (ctx) => {
-    return ctx.scene.leave();
-});
 
 const sendPrice = new Composer();
 sendPrice.action('product1', async (ctx) => {
@@ -46,6 +47,7 @@ sendPrice.action('product4', async (ctx) => {
 });
 
 sendPrice.action('Cancel', (ctx) => {
+    sendCategories(ctx);
     return ctx.wizard.back();
 });
 
