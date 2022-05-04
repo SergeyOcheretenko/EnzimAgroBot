@@ -48,7 +48,8 @@ function evenNumberTypes(typesList) {
     return keyboardArray;
 }
 
-function createTypesKeyboard(xlsxData) {
+export function createTypesKeyboard() {
+    const xlsxData = getXlsxData();
     const typesList = getTypesList(xlsxData);
 
     const len = typesList.length;
@@ -58,8 +59,6 @@ function createTypesKeyboard(xlsxData) {
     
     return Markup.inlineKeyboard(keyboardArray);
 }
-
-export const productTypesKeyboard = createTypesKeyboard(getXlsxData());
 
 export const insecticidesKeyboard = Markup.inlineKeyboard([
     [
