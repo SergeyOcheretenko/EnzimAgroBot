@@ -47,6 +47,8 @@ export function getXlsxData() {
             }
         }
     }
+    typeAndProducts.products = products;
+    sortByTypeArray.push(typeAndProducts);
 
     return sortByTypeArray;
 }
