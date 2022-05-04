@@ -20,6 +20,7 @@
   "homepage": "https://github.com/SergeyOcheretenko/EnzimAgroBot#readme",
   "dependencies": {
     "fs": "^0.0.1-security",
+    "node-xlsx": "^0.21.0",
     "telegraf": "^4.8.1"
   }
 }
