@@ -11,11 +11,13 @@ function deleteXlsxTitle(xlsxData) {
     return xlsxData.slice(1,);
 }
 
-function getData() {
-    return xlsx.parse('../xlsx/price.xlsx')[0].data;
+function getNotformattedData() {
+    return xlsx.parse('src/xlsx/price.xlsx')[0].data;
 }
 
-function separateProductTypes(xlsxData) {
+export function getXlsxData() {
+    const xlsxData = deleteXlsxTitle(getNotformattedData());
+
     const sortByTypeArray = [];
     let typeAndProducts = {};
     let products = [];

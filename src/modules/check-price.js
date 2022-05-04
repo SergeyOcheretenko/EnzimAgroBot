@@ -1,6 +1,7 @@
 'use strict';
 
 import { Scenes, Composer } from 'telegraf';
+
 import * as keyboards from './keyboards.js';
 
 const startCheckPriceScene = new Composer();
