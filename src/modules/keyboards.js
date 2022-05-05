@@ -4,7 +4,7 @@ import { Markup } from 'telegraf';
 
 import { getXlsxData } from './parse-xlsx.js'
 
-export function getTypesList() {
+function getTypesList() {
     const xlsxData = getXlsxData();
     const types = [];
     for (const productTypeObject of xlsxData) {
@@ -49,32 +49,22 @@ function evenNumberTypes(typesList) {
     return keyboardArray;
 }
 
-export function createTypesKeyboard() {
-    const typesList = getTypesList();
+function createKeyboard(dataArray) {
+    const len = dataArray.length;
 
-    const len = typesList.length;
-    const keyboardArray = (len % 2 === 0 ?
-        evenNumberTypes(typesList) :
-        oddNumberTypes(typesList));
+    const arrayForKeyboard = (len % 2 === 0 ?
+        evenNumberTypes(dataArray) :
+        oddNumberTypes(dataArray));
     
-    return Markup.inlineKeyboard(keyboardArray);
+    return Markup.inlineKeyboard(arrayForKeyboard);
 }
 
-export const insecticidesKeyboard = Markup.inlineKeyboard([
-    [
-        Markup.button.callback('Товар 1', 'product1'),
-        Markup.button.callback('Товар 2', 'product2')
-    ],
-    [
-        Markup.button.callback('Товар 3', 'product3'),
-        Markup.button.callback('Товар 4', 'product4')
-    ],
-    [
-        Markup.button.callback('Назад', 'Cancel')
-    ]
-]);
+function createTypesKeyboard() {
+    const typesList = getTypesList();
+    return createKeyboard(typesList);
+}
 
-export function createProductsKeyboards() {
+function createProductsKeyboards() {
     const keyboardsByTypes = {};
     for (const type of getTypesList()) {
         keyboardsByTypes[type] = Markup.inlineKeyboard([
@@ -94,3 +84,9 @@ export function createProductsKeyboards() {
 
     return keyboardsByTypes;
 }
+
+export {
+    getTypesList,
+    createTypesKeyboard,
+    createProductsKeyboards
+};
