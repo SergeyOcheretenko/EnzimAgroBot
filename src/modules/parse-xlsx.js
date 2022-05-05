@@ -1,21 +1,24 @@
 'use strict';
 
 import xlsx from 'node-xlsx';
-import fs from 'fs';
 
+// Отримання "довжини" об'єкту
 function getObjectLength(object) {
     return Object.keys(object).length;
 }
 
+// Видалення першого рядку XLSX-таблиці
 function deleteXlsxTitle(xlsxData) {
     return xlsxData.slice(1,);
 }
 
+// Отриманная матриці XLSX-таблиці
 function getNotformattedData() {
     return xlsx.parse('src/xlsx/price.xlsx')[0].data;
 }
 
-export function getXlsxData() {
+//Форматування та конвертування у формат hash-table отриманих XLSX-даних
+function getXlsxData() {
     const xlsxData = deleteXlsxTitle(getNotformattedData());
 
     const sortByTypeArray = [];
@@ -52,3 +55,5 @@ export function getXlsxData() {
 
     return sortByTypeArray;
 }
+
+export { getXlsxData };
