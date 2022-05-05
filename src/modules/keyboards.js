@@ -15,41 +15,42 @@ function getTypesList() {
 }
 
 // Створення клавіатури з непарною кількістю елементів
-function oddNumberTypes(typesList) {
-    const keyboardArray = [];
+function oddNumberElements(dataArray) {
+    const arrayForKeyboard = [];
 
-    const len = typesList.length;
-    const lastType = typesList[len - 1];
+    const len = dataArray.length;
+    const lastElem = dataArray[len - 1];
     for (let i = 0; i < len - 1; i += 2) {
-        const currentType = typesList[i];
-        const nextType = typesList[i + 1];
-        keyboardArray.push([ 
-            Markup.button.callback(currentType, currentType), 
-            Markup.button.callback(nextType, nextType) 
+        const currentElem = dataArray[i];
+        const nextElem = dataArray[i + 1];
+
+        arrayForKeyboard.push([ 
+            Markup.button.callback(currentElem, currentElem), 
+            Markup.button.callback(nextElem, nextElem) 
         ]);
     }
-    keyboardArray.push([
-        Markup.button.callback(lastType, lastType)
+    arrayForKeyboard.push([
+        Markup.button.callback(lastElem, lastElem)
     ]);
 
-    return keyboardArray;
+    return arrayForKeyboard;
 }
 
 // Створення клавіатури з парною кількістю елементів
-function evenNumberTypes(typesList) {
-    const keyboardArray = [];
+function evenNumberElements(dataArray) {
+    const arrayForKeyboard = [];
 
-    const len = typesList.length;
+    const len = dataArray.length;
     for (let i = 0; i < len; i += 2) {
-        const currentType = typesList[i];
-        const nextType = typesList[i + 1];
-        keyboardArray.push([ 
-            Markup.button.callback(currentType, currentType), 
-            Markup.button.callback(nextType, nextType) 
+        const currentElem = dataArray[i];
+        const nextElem = dataArray[i + 1];
+        arrayForKeyboard.push([ 
+            Markup.button.callback(currentElem, currentElem), 
+            Markup.button.callback(nextElem, nextElem) 
         ]);
     }
 
-    return keyboardArray;
+    return arrayForKeyboard;
 }
 
 // Динамічне створення клавіатури з отриманого масиву елементів
@@ -57,8 +58,8 @@ function createKeyboard(dataArray) {
     const len = dataArray.length;
 
     const arrayForKeyboard = (len % 2 === 0 ?
-        evenNumberTypes(dataArray) :
-        oddNumberTypes(dataArray));
+        evenNumberElements(dataArray) :
+        oddNumberElements(dataArray));
     
     return Markup.inlineKeyboard(arrayForKeyboard);
 }
