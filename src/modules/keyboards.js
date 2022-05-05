@@ -4,6 +4,7 @@ import { Markup } from 'telegraf';
 
 import { getXlsxData } from './parse-xlsx.js'
 
+// Отримання категорій продуктів Enzim Agro з отриманих XLSX-даних
 function getTypesList() {
     const xlsxData = getXlsxData();
     const types = [];
@@ -13,6 +14,7 @@ function getTypesList() {
     return types;
 }
 
+// Створення клавіатури з непарною кількістю елементів
 function oddNumberTypes(typesList) {
     const keyboardArray = [];
 
@@ -33,6 +35,7 @@ function oddNumberTypes(typesList) {
     return keyboardArray;
 }
 
+// Створення клавіатури з парною кількістю елементів
 function evenNumberTypes(typesList) {
     const keyboardArray = [];
 
@@ -49,6 +52,7 @@ function evenNumberTypes(typesList) {
     return keyboardArray;
 }
 
+// Динамічне створення клавіатури з отриманого масиву елементів
 function createKeyboard(dataArray) {
     const len = dataArray.length;
 
@@ -59,11 +63,13 @@ function createKeyboard(dataArray) {
     return Markup.inlineKeyboard(arrayForKeyboard);
 }
 
+// Створення клавіатури з категоріями продуктів
 function createTypesKeyboard() {
     const typesList = getTypesList();
     return createKeyboard(typesList);
 }
 
+// Створення тестових клавіатур для кожної категорії продуктів
 function createProductsKeyboards() {
     const keyboardsByTypes = {};
     for (const type of getTypesList()) {
