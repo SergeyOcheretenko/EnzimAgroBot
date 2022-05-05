@@ -4,18 +4,21 @@ import { Scenes, Composer } from 'telegraf';
 
 import * as keyboards from './keyboards.js';
 
+// Окрема функція, що надсилає список категорій користувачу
 async function sendCategories(ctx) {
     await ctx.reply('Оберіть категорію продукту:',
         keyboards.createTypesKeyboard());
     return;
 }
 
+// Перший крок сцени - надсилання списку категорій
 const startCheckPriceScene = new Composer();
 startCheckPriceScene.on('text', async (ctx) => {
     sendCategories(ctx);
     return ctx.wizard.next();
 });
 
+// Другий крок сцени - надсилання списку продуктів обраної категорії
 const selectProduct = new Composer();
 for (const type of keyboards.getTypesList()) {
     selectProduct.action(type, async (ctx) => {
@@ -25,6 +28,7 @@ for (const type of keyboards.getTypesList()) {
     });
 }
 
+// Третій крок сцени - надсилання ціни обраного продукту
 const sendPrice = new Composer();
 sendPrice.action('product1', async (ctx) => {
     await ctx.reply('*ціна першого продукту*');
