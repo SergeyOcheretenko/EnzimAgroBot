@@ -4,41 +4,26 @@ import { Scenes, Composer } from 'telegraf';
 
 import * as keyboards from './keyboards.js';
 
-const startCheckPriceScene = new Composer();
-startCheckPriceScene.on('text', async (ctx) => {
+async function sendCategories(ctx) {
     await ctx.reply('Оберіть категорію продукту:',
         keyboards.createTypesKeyboard());
+    return;
+}
+
+const startCheckPriceScene = new Composer();
+startCheckPriceScene.on('text', async (ctx) => {
+    sendCategories(ctx);
     return ctx.wizard.next();
 });
 
 const selectProduct = new Composer();
-selectProduct.action('Insecticides', async (ctx) => {
-    await ctx.reply('Оберіть продукт:', 
-        keyboards.insecticidesKeyboard);
-    return ctx.wizard.next();
-});
-
-selectProduct.action('Fungicides', async (ctx) => {
-    await ctx.reply('Оберіть продукт:', 
-        keyboards.fungicidesKeyboard);
-    return ctx.wizard.next();
-});
-
-selectProduct.action('ComplexAdditives', async (ctx) => {
-    await ctx.reply('Оберіть продукт:', 
-        keyboards.complexAdditivesKeyboard);
-    return ctx.wizard.next();
-});
-
-selectProduct.action('Annoculants', async (ctx) => {
-    await ctx.reply('Оберіть продукт:', 
-        keyboards.annoculantsKeyboard);
-    return ctx.wizard.next();
-});
-
-selectProduct.action('Cancel', async (ctx) => {
-    return ctx.scene.leave();
-});
+for (const type of keyboards.getTypesList()) {
+    selectProduct.action(type, async (ctx) => {
+        await ctx.reply('Оберіть продукт:', 
+            keyboards.createProductsKeyboards()[type]);
+        return ctx.wizard.next();
+    });
+}
 
 const sendPrice = new Composer();
 sendPrice.action('product1', async (ctx) => {
@@ -61,8 +46,9 @@ sendPrice.action('product4', async (ctx) => {
     return ctx.scene.leave();
 });
 
-sendPrice.action('Cancel', async (ctx) => {
-    return ctx.scene.leave();
+sendPrice.action('Cancel', (ctx) => {
+    sendCategories(ctx);
+    return ctx.wizard.back();
 });
 
 const checkProductPriceScene = new Scenes.WizardScene(
