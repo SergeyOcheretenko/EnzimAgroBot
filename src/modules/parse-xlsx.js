@@ -14,7 +14,9 @@ function deleteXlsxTitle(xlsxData) {
 
 // Отриманная матриці XLSX-таблиці
 function getNotformattedData() {
-    return xlsx.parse('../xlsx/price.xlsx')[0].data;
+    const xlsxAllData = xlsx.parse('src/xlsx/price.xlsx')[0].data;
+
+    return xlsxAllData.filter(row => row.length != 0);
 }
 
 //Форматування та конвертування у формат hash-table отриманих XLSX-даних
@@ -55,6 +57,7 @@ function getDataWithoutUnitFormat() {
     return sortByTypeArray;
 }
 
+// Перевірка наявності типів пакувань "кг", "л" та "пак"
 function checkUnits(saleArray) {
     const unitsExisting = {
         'кг': false,
@@ -62,42 +65,48 @@ function checkUnits(saleArray) {
         'пак': false
     };
     for (const saleVariant of saleArray) {
+        console.log(saleArray)
         const currentVariantUnit = saleVariant.unit.toLowerCase();
         unitsExisting[currentVariantUnit] = true;
     }
     return unitsExisting;
 }
 
+// Функція, що повертая масив варіантів продажу лише в обраній одиниці вимірювання
+function filterByUnit(saleArray, unit) {
+    return saleArray.filter(saleVariant => saleVariant.unit === unit);
+}
+
+// Створення нових назв продуктів з додавання одиниці вимірювання до назви
 function formatProductsList(productsArray) {
     const newProductsList = [...productsArray];
 
     for (const productObject of productsArray) {
         const unitsExisting = checkUnits(productObject.sale);
-        
-        const haveKg = unitsExisting['кг'];
-        const haveL = unitsExisting['л'];
-        const havePak = unitsExisting['пак'];
 
-        // if (haveKg) {
-        //     const newKgProduct = {
-        //         name: productObject.name + ' (кг)',
-        //         sale
-        //     }
-        // }
+        for (const unit in unitsExisting) {
+            if (unitsExisting[unit]) {
+                newProductsList.push({
+                    name: productObject.name + ` (${unit})`,
+                    sale: filterByUnit(productObject.sale, unit)
+                });
+            }
+        }
     }
+
+    return newProductsList;
 }
 
 // Форматування даних для розподілення сухої та рідкої продукції
 function getXlsxData() {
     const xlsxData = getDataWithoutUnitFormat();
 
+    xlsxData.forEach(productsByTypeObject => productsByTypeObject.products = formatProductsList(productsByTypeObject.products));
+
+    return xlsxData;
 }
 
-for (const object of getDataWithoutUnitFormat()) {
-    const products = object.products;
-    const type = object.productType;
-    console.dir({ type, products });
-}
+// Тестування
 
 for (const object of getXlsxData()) {
     const products = object.products;
