@@ -14,11 +14,13 @@ function deleteXlsxTitle(xlsxData) {
 
 // Отриманная матриці XLSX-таблиці
 function getNotformattedData() {
-    return xlsx.parse('src/xlsx/price.xlsx')[0].data;
+    const xlsxAllData = xlsx.parse('src/xlsx/price.xlsx')[0].data;
+
+    return xlsxAllData.filter(row => row.length != 0);
 }
 
 //Форматування та конвертування у формат hash-table отриманих XLSX-даних
-function getXlsxData() {
+function getDataWithoutUnitFormat() {
     const xlsxData = deleteXlsxTitle(getNotformattedData());
 
     const sortByTypeArray = [];
@@ -52,8 +54,64 @@ function getXlsxData() {
     }
     typeAndProducts.products = products;
     sortByTypeArray.push(typeAndProducts);
-
     return sortByTypeArray;
+}
+
+// Перевірка наявності типів пакувань "кг", "л" та "пак"
+function checkUnits(saleArray) {
+    const unitsExisting = {
+        'кг': false,
+        'л': false,
+        'пак': false
+    };
+    for (const saleVariant of saleArray) {
+        console.log(saleArray)
+        const currentVariantUnit = saleVariant.unit.toLowerCase();
+        unitsExisting[currentVariantUnit] = true;
+    }
+    return unitsExisting;
+}
+
+// Функція, що повертая масив варіантів продажу лише в обраній одиниці вимірювання
+function filterByUnit(saleArray, unit) {
+    return saleArray.filter(saleVariant => saleVariant.unit === unit);
+}
+
+// Створення нових назв продуктів з додавання одиниці вимірювання до назви
+function formatProductsList(productsArray) {
+    const newProductsList = [...productsArray];
+
+    for (const productObject of productsArray) {
+        const unitsExisting = checkUnits(productObject.sale);
+
+        for (const unit in unitsExisting) {
+            if (unitsExisting[unit]) {
+                newProductsList.push({
+                    name: productObject.name + ` (${unit})`,
+                    sale: filterByUnit(productObject.sale, unit)
+                });
+            }
+        }
+    }
+
+    return newProductsList;
+}
+
+// Форматування даних для розподілення сухої та рідкої продукції
+function getXlsxData() {
+    const xlsxData = getDataWithoutUnitFormat();
+
+    xlsxData.forEach(productsByTypeObject => productsByTypeObject.products = formatProductsList(productsByTypeObject.products));
+
+    return xlsxData;
+}
+
+// Тестування
+
+for (const object of getXlsxData()) {
+    const products = object.products;
+    const type = object.productType;
+    console.dir({ type, products });
 }
 
 export { getXlsxData };

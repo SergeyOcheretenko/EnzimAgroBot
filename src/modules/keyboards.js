@@ -76,15 +76,15 @@ function createProductsKeyboards() {
     for (const type of getTypesList()) {
         keyboardsByTypes[type] = Markup.inlineKeyboard([
             [
-                Markup.button.callback('Товар 1', 'product1'),
-                Markup.button.callback('Товар 2', 'product2')
+                Markup.button.callback('ВINitro "Горох" (пак)', 'product1'),
+                Markup.button.callback('Урожай "Полісульфід Na" (л)', 'product2')
             ],
             [
-                Markup.button.callback('Товар 3', 'product3'),
-                Markup.button.callback('Товар 4', 'product4')
+                Markup.button.callback('Урожай "Марганець" (л)', 'product3'),
+                Markup.button.callback('Viridin (Триходермін) Т (кг)', 'product4')
             ],
             [
-                Markup.button.callback('Відміна', 'Cancel')
+                Markup.button.callback('Назад', 'Cancel')
             ]
         ]);
     }
