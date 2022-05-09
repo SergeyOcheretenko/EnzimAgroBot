@@ -65,7 +65,6 @@ function checkUnits(saleArray) {
         'пак': false
     };
     for (const saleVariant of saleArray) {
-        console.log(saleArray)
         const currentVariantUnit = saleVariant.unit.toLowerCase();
         unitsExisting[currentVariantUnit] = true;
     }
@@ -79,7 +78,7 @@ function filterByUnit(saleArray, unit) {
 
 // Створення нових назв продуктів з додавання одиниці вимірювання до назви
 function formatProductsList(productsArray) {
-    const newProductsList = [...productsArray];
+    const newProductsList = [];
 
     for (const productObject of productsArray) {
         const unitsExisting = checkUnits(productObject.sale);
@@ -104,14 +103,6 @@ function getXlsxData() {
     xlsxData.forEach(productsByTypeObject => productsByTypeObject.products = formatProductsList(productsByTypeObject.products));
 
     return xlsxData;
-}
-
-// Тестування
-
-for (const object of getXlsxData()) {
-    const products = object.products;
-    const type = object.productType;
-    console.dir({ type, products });
 }
 
 export { getXlsxData };

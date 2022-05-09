@@ -4,6 +4,16 @@ import { Markup } from 'telegraf';
 
 import { getXlsxData } from './parse-xlsx.js'
 
+// Функція, яка знаходить потрібний об'єкт з видом продукції та продуктами цього виду
+function findNeededType(array, neededType) {
+    for (const object of array) {
+        if (object.productType === neededType) {
+            return object;
+        }
+    }
+    return;
+}
+
 // Отримання категорій продуктів Enzim Agro з отриманих XLSX-даних
 function getTypesList() {
     const xlsxData = getXlsxData();
@@ -53,13 +63,36 @@ function evenNumberElements(dataArray) {
     return arrayForKeyboard;
 }
 
+// Створення клавіатури в один стовпчик
+function createKeyboardInOneColumn(dataArray) {
+    const arrayForKeyboard = [];
+
+    for (const elem of dataArray) {
+        arrayForKeyboard.push([ 
+            Markup.button.callback(elem, elem)
+        ]);
+    }
+
+    return arrayForKeyboard;
+}
+
 // Динамічне створення клавіатури з отриманого масиву елементів
 function createKeyboard(dataArray) {
-    const len = dataArray.length;
+    const shortNames = dataArray.filter(elem => elem.length <= 20);
+    const longNames = dataArray.filter(elem => elem.length > 20);
 
-    const arrayForKeyboard = (len % 2 === 0 ?
-        evenNumberElements(dataArray) :
-        oddNumberElements(dataArray));
+    const lenOfShort = shortNames.length;
+
+    const arrayOfShortForKeyboard = (lenOfShort % 2 === 0 ?
+        evenNumberElements(shortNames) :
+        oddNumberElements(shortNames)
+    );
+
+    const arrayOfLongForKeyboard = createKeyboardInOneColumn(longNames);
+    
+    const arrayForKeyboard = [...arrayOfShortForKeyboard, ...arrayOfLongForKeyboard];
+
+    // const arrayForKeyboard = createKeyboardInOneColumn(dataArray);
     
     return Markup.inlineKeyboard(arrayForKeyboard);
 }
@@ -73,20 +106,14 @@ function createTypesKeyboard() {
 // Створення тестових клавіатур для кожної категорії продуктів
 function createProductsKeyboards() {
     const keyboardsByTypes = {};
-    for (const type of getTypesList()) {
-        keyboardsByTypes[type] = Markup.inlineKeyboard([
-            [
-                Markup.button.callback('ВINitro "Горох" (пак)', 'product1'),
-                Markup.button.callback('Урожай "Полісульфід Na" (л)', 'product2')
-            ],
-            [
-                Markup.button.callback('Урожай "Марганець" (л)', 'product3'),
-                Markup.button.callback('Viridin (Триходермін) Т (кг)', 'product4')
-            ],
-            [
-                Markup.button.callback('Назад', 'Cancel')
-            ]
-        ]);
+    
+    const typesList = getTypesList();
+    const xlsxData = getXlsxData();
+
+    for (const type of typesList) {
+        const productsList = findNeededType(xlsxData, type).products;
+        const productsNames = productsList.map(elem => elem.name);
+        keyboardsByTypes[type] = createKeyboard(productsNames);
     }
 
     return keyboardsByTypes;
