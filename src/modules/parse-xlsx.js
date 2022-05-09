@@ -65,7 +65,6 @@ function checkUnits(saleArray) {
         'пак': false
     };
     for (const saleVariant of saleArray) {
-        console.log(saleArray)
         const currentVariantUnit = saleVariant.unit.toLowerCase();
         unitsExisting[currentVariantUnit] = true;
     }
@@ -104,14 +103,6 @@ function getXlsxData() {
     xlsxData.forEach(productsByTypeObject => productsByTypeObject.products = formatProductsList(productsByTypeObject.products));
 
     return xlsxData;
-}
-
-// Тестування
-
-for (const object of getXlsxData()) {
-    const products = object.products;
-    const type = object.productType;
-    console.dir({ type, products });
 }
 
 export { getXlsxData };

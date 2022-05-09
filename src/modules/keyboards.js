@@ -4,6 +4,16 @@ import { Markup } from 'telegraf';
 
 import { getXlsxData } from './parse-xlsx.js'
 
+// Функція, яка знаходить потрібний об'єкт з видом продукції та продуктами цього виду
+function findNeededType(array, neededType) {
+    for (const object of array) {
+        if (object.productType === neededType) {
+            return object;
+        }
+    }
+    return;
+}
+
 // Отримання категорій продуктів Enzim Agro з отриманих XLSX-даних
 function getTypesList() {
     const xlsxData = getXlsxData();
@@ -88,22 +98,14 @@ function createTypesKeyboard() {
 // Створення тестових клавіатур для кожної категорії продуктів
 function createProductsKeyboards() {
     const keyboardsByTypes = {};
-    for (const type of getTypesList()) {
-        keyboardsByTypes[type] = Markup.inlineKeyboard([
-            [
-                Markup.button.callback('ВINitro "Горох" (пак)', 'product1'),
-                Markup.button.callback('ВINitro "Cоя" (кг)', 'product1')
-            ],
-            [
-                Markup.button.callback('Урожай "Полісульфід Na" (л)', 'product2')
-            ],
-            [
-                Markup.button.callback('Viridin (Триходермін) Т (кг)', 'product4')
-            ],
-            [
-                Markup.button.callback('Назад', 'Cancel')
-            ]
-        ]);
+    
+    const typesList = getTypesList();
+    const xlsxData = getXlsxData();
+
+    for (const type of typesList) {
+        const productsList = findNeededType(xlsxData, type).products;
+        const productsNames = productsList.map(elem => elem.name);
+        keyboardsByTypes[type] = createKeyboard(productsNames);
     }
 
     return keyboardsByTypes;
