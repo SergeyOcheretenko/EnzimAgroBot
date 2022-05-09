@@ -79,7 +79,7 @@ function filterByUnit(saleArray, unit) {
 
 // Створення нових назв продуктів з додавання одиниці вимірювання до назви
 function formatProductsList(productsArray) {
-    const newProductsList = [...productsArray];
+    const newProductsList = [];
 
     for (const productObject of productsArray) {
         const unitsExisting = checkUnits(productObject.sale);

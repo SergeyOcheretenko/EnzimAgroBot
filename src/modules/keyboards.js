@@ -77,10 +77,12 @@ function createProductsKeyboards() {
         keyboardsByTypes[type] = Markup.inlineKeyboard([
             [
                 Markup.button.callback('ВINitro "Горох" (пак)', 'product1'),
+                Markup.button.callback('ВINitro "Cоя" (кг)', 'product1')
+            ],
+            [
                 Markup.button.callback('Урожай "Полісульфід Na" (л)', 'product2')
             ],
             [
-                Markup.button.callback('Урожай "Марганець" (л)', 'product3'),
                 Markup.button.callback('Viridin (Триходермін) Т (кг)', 'product4')
             ],
             [
