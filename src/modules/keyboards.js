@@ -78,13 +78,21 @@ function createKeyboardInOneColumn(dataArray) {
 
 // Динамічне створення клавіатури з отриманого масиву елементів
 function createKeyboard(dataArray) {
-    // const len = dataArray.length;
+    const shortNames = dataArray.filter(elem => elem.length <= 20);
+    const longNames = dataArray.filter(elem => elem.length > 20);
 
-    // const arrayForKeyboard = (len % 2 === 0 ?
-    //     evenNumberElements(dataArray) :
-    //     oddNumberElements(dataArray));
+    const lenOfShort = shortNames.length;
+
+    const arrayOfShortForKeyboard = (lenOfShort % 2 === 0 ?
+        evenNumberElements(shortNames) :
+        oddNumberElements(shortNames)
+    );
+
+    const arrayOfLongForKeyboard = createKeyboardInOneColumn(longNames);
     
-    const arrayForKeyboard = createKeyboardInOneColumn(dataArray);
+    const arrayForKeyboard = [...arrayOfShortForKeyboard, ...arrayOfLongForKeyboard];
+
+    // const arrayForKeyboard = createKeyboardInOneColumn(dataArray);
     
     return Markup.inlineKeyboard(arrayForKeyboard);
 }
