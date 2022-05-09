@@ -53,13 +53,28 @@ function evenNumberElements(dataArray) {
     return arrayForKeyboard;
 }
 
+// Створення клавіатури в один стовпчик
+function createKeyboardInOneColumn(dataArray) {
+    const arrayForKeyboard = [];
+
+    for (const elem of dataArray) {
+        arrayForKeyboard.push([ 
+            Markup.button.callback(elem, elem)
+        ]);
+    }
+
+    return arrayForKeyboard;
+}
+
 // Динамічне створення клавіатури з отриманого масиву елементів
 function createKeyboard(dataArray) {
-    const len = dataArray.length;
+    // const len = dataArray.length;
 
-    const arrayForKeyboard = (len % 2 === 0 ?
-        evenNumberElements(dataArray) :
-        oddNumberElements(dataArray));
+    // const arrayForKeyboard = (len % 2 === 0 ?
+    //     evenNumberElements(dataArray) :
+    //     oddNumberElements(dataArray));
+    
+    const arrayForKeyboard = createKeyboardInOneColumn(dataArray);
     
     return Markup.inlineKeyboard(arrayForKeyboard);
 }
