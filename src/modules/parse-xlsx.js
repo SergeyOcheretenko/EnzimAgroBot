@@ -1,5 +1,6 @@
 'use strict';
 
+// Імпорт бібліотеки для зчитування XLSX-даних
 import xlsx from 'node-xlsx';
 
 // Отримання "довжини" об'єкту
@@ -76,7 +77,7 @@ function filterByUnit(saleArray, unit) {
     return saleArray.filter(saleVariant => saleVariant.unit === unit);
 }
 
-// Створення нових назв продуктів з додавання одиниці вимірювання до назви
+// Форматування даних для розподілення сухої та рідкої продукції
 function formatProductsList(productsArray) {
     const newProductsList = [];
 
@@ -96,7 +97,7 @@ function formatProductsList(productsArray) {
     return newProductsList;
 }
 
-// Форматування даних для розподілення сухої та рідкої продукції
+// Зчитування XLSX-даних з повним форматуванням даних
 function getXlsxData() {
     const xlsxData = getDataWithoutUnitFormat();
 

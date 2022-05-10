@@ -66,7 +66,7 @@ function evenNumberElements(dataArray) {
 // Створення клавіатури в один стовпчик
 function createKeyboardInOneColumn(dataArray) {
     const arrayForKeyboard = [];
-
+    
     for (const elem of dataArray) {
         arrayForKeyboard.push([ 
             Markup.button.callback(elem, elem)
@@ -76,24 +76,35 @@ function createKeyboardInOneColumn(dataArray) {
     return arrayForKeyboard;
 }
 
-// Динамічне створення клавіатури з отриманого масиву елементів
-function createKeyboard(dataArray) {
+// Створення масиву кнопок для клавіатури
+function createArrayForKeyboard(dataArray) {
     const shortNames = dataArray.filter(elem => elem.length <= 20);
     const longNames = dataArray.filter(elem => elem.length > 20);
 
-    const lenOfShort = shortNames.length;
-
-    const arrayOfShortForKeyboard = (lenOfShort % 2 === 0 ?
+    const arrayOfShortForKeyboard = (shortNames.length % 2 === 0 ?
         evenNumberElements(shortNames) :
         oddNumberElements(shortNames)
     );
-
     const arrayOfLongForKeyboard = createKeyboardInOneColumn(longNames);
     
     const arrayForKeyboard = [...arrayOfShortForKeyboard, ...arrayOfLongForKeyboard];
+    return arrayForKeyboard;
+}
 
-    // const arrayForKeyboard = createKeyboardInOneColumn(dataArray);
-    
+// Динамічне створення клавіатури з отриманого масиву елементів, без кнопки "Назад"
+function createKeyboard(dataArray) {
+    const arrayForKeyboard = createArrayForKeyboard(dataArray);
+
+    return Markup.inlineKeyboard(arrayForKeyboard);
+}
+
+// Створення клавіатури з кнопкою "Назад"
+function createKeyboardWithBackButton(dataArray) {
+    const arrayForKeyboard = createArrayForKeyboard(dataArray);
+    arrayForKeyboard.push([
+        Markup.button.callback('Назад', 'Back')
+    ]);
+
     return Markup.inlineKeyboard(arrayForKeyboard);
 }
 
@@ -113,7 +124,7 @@ function createProductsKeyboards() {
     for (const type of typesList) {
         const productsList = findNeededType(xlsxData, type).products;
         const productsNames = productsList.map(elem => elem.name);
-        keyboardsByTypes[type] = createKeyboard(productsNames);
+        keyboardsByTypes[type] = createKeyboardWithBackButton(productsNames);
     }
 
     return keyboardsByTypes;

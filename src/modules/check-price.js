@@ -1,7 +1,9 @@
 'use strict';
 
+// Імпорт бібліотек для створення сцен
 import { Scenes, Composer } from 'telegraf';
 
+// Імпорт конструкторів клавіатур
 import * as keyboards from './keyboards.js';
 
 // Окрема функція, що надсилає список категорій користувачу
@@ -50,7 +52,7 @@ sendPrice.action('product4', async (ctx) => {
     return ctx.scene.leave();
 });
 
-sendPrice.action('Cancel', (ctx) => {
+sendPrice.action('Back', (ctx) => {
     sendCategories(ctx);
     return ctx.wizard.back();
 });
