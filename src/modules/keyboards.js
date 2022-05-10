@@ -66,7 +66,7 @@ function evenNumberElements(dataArray) {
 // Створення клавіатури в один стовпчик
 function createKeyboardInOneColumn(dataArray) {
     const arrayForKeyboard = [];
-
+    
     for (const elem of dataArray) {
         arrayForKeyboard.push([ 
             Markup.button.callback(elem, elem)
@@ -81,21 +81,17 @@ function createArrayForKeyboard(dataArray) {
     const shortNames = dataArray.filter(elem => elem.length <= 20);
     const longNames = dataArray.filter(elem => elem.length > 20);
 
-    const lenOfShort = shortNames.length;
-
-    const arrayOfShortForKeyboard = (lenOfShort % 2 === 0 ?
+    const arrayOfShortForKeyboard = (shortNames.length % 2 === 0 ?
         evenNumberElements(shortNames) :
         oddNumberElements(shortNames)
     );
-
     const arrayOfLongForKeyboard = createKeyboardInOneColumn(longNames);
     
     const arrayForKeyboard = [...arrayOfShortForKeyboard, ...arrayOfLongForKeyboard];
-
     return arrayForKeyboard;
 }
 
-// Динамічне створення клавіатури з отриманого масиву елементів
+// Динамічне створення клавіатури з отриманого масиву елементів, без кнопки "Назад"
 function createKeyboard(dataArray) {
     const arrayForKeyboard = createArrayForKeyboard(dataArray);
 
