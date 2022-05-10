@@ -77,7 +77,7 @@ function createKeyboardInOneColumn(dataArray) {
 }
 
 // Динамічне створення клавіатури з отриманого масиву елементів
-function createKeyboard(dataArray) {
+function createKeyboard(dataArray, cancel = false) {
     const shortNames = dataArray.filter(elem => elem.length <= 20);
     const longNames = dataArray.filter(elem => elem.length > 20);
 
@@ -92,6 +92,11 @@ function createKeyboard(dataArray) {
     
     const arrayForKeyboard = [...arrayOfShortForKeyboard, ...arrayOfLongForKeyboard];
 
+    if (cancel) {
+        arrayForKeyboard.push([
+            Markup.button.callback('Назад', 'Back')
+        ]);
+    }
     // const arrayForKeyboard = createKeyboardInOneColumn(dataArray);
     
     return Markup.inlineKeyboard(arrayForKeyboard);
@@ -113,7 +118,7 @@ function createProductsKeyboards() {
     for (const type of typesList) {
         const productsList = findNeededType(xlsxData, type).products;
         const productsNames = productsList.map(elem => elem.name);
-        keyboardsByTypes[type] = createKeyboard(productsNames);
+        keyboardsByTypes[type] = createKeyboard(productsNames, true);
     }
 
     return keyboardsByTypes;

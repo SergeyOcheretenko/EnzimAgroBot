@@ -50,7 +50,7 @@ sendPrice.action('product4', async (ctx) => {
     return ctx.scene.leave();
 });
 
-sendPrice.action('Cancel', (ctx) => {
+sendPrice.action('Back', (ctx) => {
     sendCategories(ctx);
     return ctx.wizard.back();
 });

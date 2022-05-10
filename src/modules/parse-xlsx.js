@@ -76,7 +76,7 @@ function filterByUnit(saleArray, unit) {
     return saleArray.filter(saleVariant => saleVariant.unit === unit);
 }
 
-// Створення нових назв продуктів з додавання одиниці вимірювання до назви
+// Створення нових назв продуктів з додаванням одиниці вимірювання до назви
 function formatProductsList(productsArray) {
     const newProductsList = [];
 
