@@ -8,7 +8,7 @@ import { parseJSON } from './modules/work-with-json.js';
 import { getAdmins } from './modules/admins-list.js';
 
 // Імпорт Wizard-сцен
-import { checkProductPriceScene } from './modules/check-price.js';
+import { createCheckPriceScene } from './modules/check-price.js';
 import { changeDollarScene } from './modules/change-dollar.js';
 
 const CONFIG = parseJSON('CONFIG.json');
@@ -20,16 +20,20 @@ bot.command('start', (ctx) => ctx.reply('Start'));
 
 bot.command('help', (ctx) => ctx.reply('Help for using the system'));
 
+// Створення сцени при запуску програми 
+let checkPriceScene = createCheckPriceScene();
+
 const stage = new Scenes.Stage([
-    checkProductPriceScene,
+    checkPriceScene,
     changeDollarScene
 ]);
 
 bot.use(session(), stage.middleware());
 
-// Запуск сцени з цінами продукції Enzim Agro
+// Оновлення та запуск сцени з цінами продукції Enzim Agro
 bot.command('price', (ctx) => {
-    ctx.scene.enter('checkProductPriceScene');
+    checkPriceScene = createCheckPriceScene();
+    ctx.scene.enter('checkPriceScene');
 });
 
 // Запуск сцени зміни курсу USD (лише для адміністраторів)
