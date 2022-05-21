@@ -123,5 +123,6 @@ function createProductsKeyboards() {
 export {
     getTypesList,
     createTypesKeyboard,
-    createProductsKeyboards
+    createProductsKeyboards,
+    createKeyboardWithBackButton
 };

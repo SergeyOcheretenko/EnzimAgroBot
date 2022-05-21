@@ -33,19 +33,24 @@ function createCheckPriceScene() {
         });
     }
 
-    // Третій крок сцени - надсилання ціни обраного продукту
-    const sendPrice = new Composer();
+    // Третій крок сцени - надсилання варіантів упаковки
+    const sendPackageVariants = new Composer();
     const allProductsWithPrices = getProductsWithPrices();
-    console.log(allProductsWithPrices);
     
     for(const product in allProductsWithPrices) {
-        sendPrice.action(product, async (ctx) => {
-            await ctx.reply(`${allProductsWithPrices[product]} USD.`);
+        sendPackageVariants.action(product, async (ctx) => {
+            const productSaleVariants = allProductsWithPrices[product];
+            const packageVariants = [];
+            for (const packageType in productSaleVariants) {
+                packageVariants.push(packageType);
+            }
+            await ctx.reply('Оберіть варіант упаковки:', 
+                keyboards.createKeyboardWithBackButton(packageVariants));
             return ctx.scene.leave();
         });
     }
 
-    sendPrice.action('Back', (ctx) => {
+    sendPackageVariants.action('Back', (ctx) => {
         sendCategories(ctx);
         return ctx.wizard.back();
     });
@@ -54,7 +59,7 @@ function createCheckPriceScene() {
         'checkPriceScene', 
         startCheckPriceScene, 
         selectProduct, 
-        sendPrice
+        sendPackageVariants
     );
 
     return checkPriceScene;
