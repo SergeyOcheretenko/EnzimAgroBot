@@ -1,10 +1,11 @@
 'use strict';
 
 // Імпорт бібліотек для створення сцен
-import { Scenes, Composer } from 'telegraf';
+import { Scenes, Composer, session } from 'telegraf';
 
 // Імпорт конструкторів клавіатур
 import * as keyboards from './keyboards.js';
+import { getProductsWithPrices } from './parse-xlsx.js';
 
 // Окрема функція, що надсилає список категорій користувачу
 async function sendCategories(ctx) {
@@ -25,6 +26,7 @@ function createCheckPriceScene() {
     const selectProduct = new Composer();
     for (const type of keyboards.getTypesList()) {
         selectProduct.action(type, async (ctx) => {
+            ctx.session.type = type;
             await ctx.reply('Оберіть продукт:', 
                 keyboards.createProductsKeyboards()[type]);
             return ctx.wizard.next();
@@ -33,25 +35,15 @@ function createCheckPriceScene() {
 
     // Третій крок сцени - надсилання ціни обраного продукту
     const sendPrice = new Composer();
-    sendPrice.action('product1', async (ctx) => {
-        await ctx.reply('*ціна першого продукту*');
-        return ctx.scene.leave();
-    });
-
-    sendPrice.action('product2', async (ctx) => {
-        await ctx.reply('*ціна другого продукту*');
-        return ctx.scene.leave();
-    });
-
-    sendPrice.action('product3', async (ctx) => {
-        await ctx.reply('*ціна третього продукту*');
-        return ctx.scene.leave();
-    });
-
-    sendPrice.action('product4', async (ctx) => {
-        await ctx.reply('*ціна четвертого продукту*');
-        return ctx.scene.leave();
-    });
+    const allProductsWithPrices = getProductsWithPrices();
+    console.log(allProductsWithPrices);
+    
+    for(const product in allProductsWithPrices) {
+        sendPrice.action(product, async (ctx) => {
+            await ctx.reply(`${allProductsWithPrices[product]} USD.`);
+            return ctx.scene.leave();
+        });
+    }
 
     sendPrice.action('Back', (ctx) => {
         sendCategories(ctx);
