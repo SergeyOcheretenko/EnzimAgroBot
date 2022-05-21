@@ -106,4 +106,51 @@ function getXlsxData() {
     return xlsxData;
 }
 
-export { getXlsxData };
+// Отримання категорій продуктів Enzim Agro з отриманих XLSX-даних
+function getTypesList() {
+    const xlsxData = getXlsxData();
+    const types = [];
+    for (const productTypeObject of xlsxData) {
+        types.push(productTypeObject.productType);
+    }
+    return types;
+}
+
+// Отримання об'єкту "продукт: ціна"
+function getProductsWithPrices() {
+    const allProductsWithPrices = {};
+    const xlsxData = getXlsxData();
+    for (const objectByType of xlsxData) {
+        const products = objectByType.products;
+
+        for (const productObject of products) {
+            const productName = productObject.name;
+            const productSaleVariants = productObject.sale;
+            const productPricesByPackageType = {};
+            
+            for (const saleVariant of productSaleVariants) {
+                const packageType = saleVariant.packageType;
+                const price = saleVariant.price;
+                productPricesByPackageType[packageType] = price;
+            }
+            allProductsWithPrices[productName] = productPricesByPackageType;
+        }
+    }
+    return allProductsWithPrices;
+}
+
+function getAllPackageVariants() {
+    const packageVariants = [];
+    
+    const productsWithPrices = getProductsWithPrices();
+    for (const productName in productsWithPrices) {
+        for (const packageType in productsWithPrices[productName]) {
+            if (!packageVariants.includes(packageType)) {
+                packageVariants.push(packageType);
+            }
+        }
+    }
+    return packageVariants;
+}
+
+export { getXlsxData, getTypesList, getProductsWithPrices, getAllPackageVariants };
