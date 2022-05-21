@@ -122,7 +122,7 @@ function getProductsWithPrices() {
     const xlsxData = getXlsxData();
     for (const objectByType of xlsxData) {
         const products = objectByType.products;
-        console.log(products);
+
         for (const productObject of products) {
             const productName = productObject.name;
             const productSaleVariants = productObject.sale;
@@ -139,4 +139,18 @@ function getProductsWithPrices() {
     return allProductsWithPrices;
 }
 
-export { getXlsxData, getTypesList, getProductsWithPrices };
+function getAllPackageVariants() {
+    const packageVariants = [];
+    
+    const productsWithPrices = getProductsWithPrices();
+    for (const productName in productsWithPrices) {
+        for (const packageType in productsWithPrices[productName]) {
+            if (!packageVariants.includes(packageType)) {
+                packageVariants.push(packageType);
+            }
+        }
+    }
+    return packageVariants;
+}
+
+export { getXlsxData, getTypesList, getProductsWithPrices, getAllPackageVariants };
