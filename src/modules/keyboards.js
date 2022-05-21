@@ -4,6 +4,10 @@ import { Markup } from 'telegraf';
 
 import { getXlsxData, getTypesList } from './parse-xlsx.js'
 
+// *****************
+// ДОПОМІЖНІ ФУНКЦІЇ
+// *****************
+
 // Функція, яка знаходить потрібний об'єкт з видом продукції та продуктами цього виду
 function findNeededProductsByType(array, neededType) {
     for (const object of array) {
@@ -11,58 +15,41 @@ function findNeededProductsByType(array, neededType) {
             return object;
         }
     }
-    return;
 }
 
-// Створення клавіатури з непарною кількістю елементів
-function oddNumberElements(dataArray) {
-    const arrayForKeyboard = [];
+// Створення кнопки для Inline-клавіатури
+function button(elem) {
+    return Markup.button.callback(elem, elem);
+}
 
-    const len = dataArray.length;
-    const lastElem = dataArray[len - 1];
-    for (let i = 0; i < len - 1; i += 2) {
-        const currentElem = dataArray[i];
-        const nextElem = dataArray[i + 1];
+// *****************************************
+// СТВОРЕННЯ МАСИВІВ ЕЛЕМЕНТІВ ДЛЯ КЛАВІАТУР
+// *****************************************
 
-        arrayForKeyboard.push([ 
-            Markup.button.callback(currentElem, currentElem), 
-            Markup.button.callback(nextElem, nextElem) 
-        ]);
-    }
-    arrayForKeyboard.push([
-        Markup.button.callback(lastElem, lastElem)
-    ]);
-
-    return arrayForKeyboard;
+// Створення масиву для клавіатури в один стовпчик
+function arrayForOneColumnKeyboard(dataArray) {
+    return dataArray.map(elem => [ button(elem) ]);
 }
 
 // Створення клавіатури з парною кількістю елементів
 function evenNumberElements(dataArray) {
     const arrayForKeyboard = [];
 
-    const len = dataArray.length;
-    for (let i = 0; i < len; i += 2) {
+    for (let i = 0; i < dataArray.length; i += 2) {
         const currentElem = dataArray[i];
         const nextElem = dataArray[i + 1];
-        arrayForKeyboard.push([ 
-            Markup.button.callback(currentElem, currentElem), 
-            Markup.button.callback(nextElem, nextElem) 
-        ]);
+        arrayForKeyboard.push([ button(currentElem), button(nextElem) ]);
     }
-
     return arrayForKeyboard;
 }
 
-// Створення клавіатури в один стовпчик
-function createKeyboardInOneColumn(dataArray) {
-    const arrayForKeyboard = [];
-    
-    for (const elem of dataArray) {
-        arrayForKeyboard.push([ 
-            Markup.button.callback(elem, elem)
-        ]);
-    }
+// Створення клавіатури з непарною кількістю елементів
+function oddNumberElements(dataArray) {
+    const len = dataArray.length;
+    const arrayForKeyboard = evenNumberElements(dataArray.slice(0, len - 1));
 
+    const lastElem = dataArray[len - 1];
+    arrayForKeyboard.push([ button(lastElem) ]);
     return arrayForKeyboard;
 }
 
@@ -75,36 +62,42 @@ function createArrayForKeyboard(dataArray) {
         evenNumberElements(shortNames) :
         oddNumberElements(shortNames)
     );
-    const arrayOfLongForKeyboard = createKeyboardInOneColumn(longNames);
+    const arrayOfLongForKeyboard = arrayForOneColumnKeyboard(longNames);
     
     const arrayForKeyboard = [...arrayOfShortForKeyboard, ...arrayOfLongForKeyboard];
     return arrayForKeyboard;
 }
 
-// Динамічне створення клавіатури з отриманого масиву елементів, без кнопки "Назад"
-function createKeyboard(dataArray) {
-    const arrayForKeyboard = createArrayForKeyboard(dataArray);
+// *******************
+// СТВОРЕННЯ КЛАВІАТУР
+// *******************
 
+// КЛАВІАТУРА В ОДИН СТОВПЧИК
+// КЛАВІАТУРА З КНОПКОЮ "НАЗАД"
+// КЛАВІАТУРА З ТИПАМИ ПРОДУКЦІЇ
+// ХЕШ-ТАБЛИЦЯ КЛАВІАТУР ПРОДУКТІВ ВІДПОВІДНО ДО ТИПІВ
+
+// Створення клавіатури в один стовпчик
+function createKeyboardInOneColumn(dataArray) {
+    const arrayForKeyboard = arrayForOneColumnKeyboard(dataArray);
     return Markup.inlineKeyboard(arrayForKeyboard);
 }
 
 // Створення клавіатури з кнопкою "Назад"
 function createKeyboardWithBackButton(dataArray) {
     const arrayForKeyboard = createArrayForKeyboard(dataArray);
-    arrayForKeyboard.push([
-        Markup.button.callback('Назад', 'Back')
-    ]);
-
+    arrayForKeyboard.push([ button('Назад') ]);
     return Markup.inlineKeyboard(arrayForKeyboard);
 }
 
 // Створення клавіатури з категоріями продуктів
 function createTypesKeyboard() {
     const typesList = getTypesList();
-    return createKeyboard(typesList);
+    const arrayForKeyboard = createArrayForKeyboard(typesList);
+    return Markup.inlineKeyboard(arrayForKeyboard);
 }
 
-// Створення тестових клавіатур для кожної категорії продуктів
+// Створення клавіатур для кожної категорії продуктів
 function createProductsKeyboards() {
     const keyboardsByTypes = {};
     
@@ -120,9 +113,14 @@ function createProductsKeyboards() {
     return keyboardsByTypes;
 }
 
+// ********
+// ЕКСПОРТ
+// ********
+
 export {
     getTypesList,
     createTypesKeyboard,
     createProductsKeyboards,
-    createKeyboardWithBackButton
+    createKeyboardWithBackButton,
+    createKeyboardInOneColumn
 };

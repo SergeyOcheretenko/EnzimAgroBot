@@ -1,7 +1,10 @@
 'use strict';
 
-// Імпорт бібліотеки для зчитування XLSX-даних
 import xlsx from 'node-xlsx';
+
+// *****************
+// ДОПОМІЖНІ ФУНКЦІЇ
+// *****************
 
 // Отримання "довжини" об'єкту
 function getObjectLength(object) {
@@ -11,51 +14,6 @@ function getObjectLength(object) {
 // Видалення першого рядку XLSX-таблиці
 function deleteXlsxTitle(xlsxData) {
     return xlsxData.slice(1,);
-}
-
-// Отриманная матриці XLSX-таблиці
-function getNotformattedData() {
-    const xlsxAllData = xlsx.parse('src/xlsx/price.xlsx')[0].data;
-
-    return xlsxAllData.filter(row => row.length != 0);
-}
-
-//Форматування та конвертування у формат hash-table отриманих XLSX-даних
-function getDataWithoutUnitFormat() {
-    const xlsxData = deleteXlsxTitle(getNotformattedData());
-
-    const sortByTypeArray = [];
-    let typeAndProducts = {};
-    let products = [];
-
-    for (const row of xlsxData) {
-        if (row.length === 1) {
-            if (getObjectLength(typeAndProducts) !== 0) {
-                typeAndProducts.products = products;
-                sortByTypeArray.push(typeAndProducts);
-                typeAndProducts = {};
-                products = [];
-            }
-
-            typeAndProducts.productType = row[0];
-        } else {
-            const [productName, packageType, price, unit] = row;
-
-            if (productName != null) {
-                const product = {
-                    name: productName,
-                    sale: [{ packageType, price, unit }]
-                };
-
-                products.push(product);
-            } else {
-                products[products.length - 1].sale.push({ packageType, price, unit });
-            }
-        }
-    }
-    typeAndProducts.products = products;
-    sortByTypeArray.push(typeAndProducts);
-    return sortByTypeArray;
 }
 
 // Перевірка наявності типів пакувань "кг", "л" та "пак"
@@ -75,6 +33,52 @@ function checkUnits(saleArray) {
 // Функція, що повертая масив варіантів продажу лише в обраній одиниці вимірювання
 function filterByUnit(saleArray, unit) {
     return saleArray.filter(saleVariant => saleVariant.unit === unit);
+}
+
+// *******************************************
+// ПАРСИНГ ТА ПОЕТАПНЕ ФОРМАТУВАННЯ XLSX-ДАНИХ
+// *******************************************
+
+// Отриманная матриці XLSX-таблиці
+function parseNotformattedData() {
+    const xlsxAllData = xlsx.parse('src/xlsx/price.xlsx')[0].data;
+    return xlsxAllData.filter(row => row.length != 0);
+}
+
+// Форматування та конвертування у формат hash-table отриманих XLSX-даних
+function getDataWithoutUnitFormat() {
+    const xlsxData = deleteXlsxTitle(parseNotformattedData());
+
+    const sortByTypeArray = [];
+    let typeAndProducts = {};
+    let products = [];
+
+    for (const row of xlsxData) {
+        if (row.length === 1) {
+            if (getObjectLength(typeAndProducts) !== 0) {
+                typeAndProducts.products = products;
+                sortByTypeArray.push(typeAndProducts);
+                typeAndProducts = {};
+                products = [];
+            }
+
+            typeAndProducts.productType = row[0];
+        } else {
+            const [productName, packageType, price, unit] = row;
+            if (productName != null) {
+                const product = {
+                    name: productName,
+                    sale: [{ packageType, price, unit }]
+                };
+                products.push(product);
+            } else {
+                products[products.length - 1].sale.push({ packageType, price, unit });
+            }
+        }
+    }
+    typeAndProducts.products = products;
+    sortByTypeArray.push(typeAndProducts);
+    return sortByTypeArray;
 }
 
 // Форматування даних для розподілення сухої та рідкої продукції
@@ -100,11 +104,13 @@ function formatProductsList(productsArray) {
 // Зчитування XLSX-даних з повним форматуванням даних
 function getXlsxData() {
     const xlsxData = getDataWithoutUnitFormat();
-
     xlsxData.forEach(productsByTypeObject => productsByTypeObject.products = formatProductsList(productsByTypeObject.products));
-
     return xlsxData;
 }
+
+// *****************
+// ДОДАТКОВІ ФУНКЦІЇ
+// *****************
 
 // Отримання категорій продуктів Enzim Agro з отриманих XLSX-даних
 function getTypesList() {
@@ -116,7 +122,7 @@ function getTypesList() {
     return types;
 }
 
-// Отримання об'єкту "продукт: ціна"
+// Отримання об'єкту "продукт: упаковка: ціна"
 function getProductsWithPrices() {
     const allProductsWithPrices = {};
     const xlsxData = getXlsxData();
@@ -139,6 +145,7 @@ function getProductsWithPrices() {
     return allProductsWithPrices;
 }
 
+// Отримання усіх існуючих варіантів пакувань
 function getAllPackageVariants() {
     const packageVariants = [];
     
@@ -153,4 +160,9 @@ function getAllPackageVariants() {
     return packageVariants;
 }
 
-export { getXlsxData, getTypesList, getProductsWithPrices, getAllPackageVariants };
+export { 
+    getXlsxData, 
+    getTypesList, 
+    getProductsWithPrices, 
+    getAllPackageVariants 
+};
