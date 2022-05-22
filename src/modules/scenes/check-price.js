@@ -19,7 +19,7 @@ function answerTemplate(product, packageType, priceInUSD) {
     return `<b>Продукт:</b> ${product}\n` + 
         `<b>Упаковка:</b> ${packageType}\n` +
         `<b>Ціна в USD:</b> ${priceInUSD} USD\n` + 
-        `<b>Ціна в гривнях:</b> ${convertUSD(priceInUSD)} грн.`
+        `<b>Ціна в ГРН:</b> ${convertUSD(priceInUSD)} грн.`
 }
 
 // *************************************************************
@@ -28,7 +28,7 @@ function answerTemplate(product, packageType, priceInUSD) {
 
 // Функція, що надсилає список категорій користувачу
 function sendCategories(ctx) {
-    ctx.reply('Оберіть категорію продукту:',
+    ctx.reply('Оберіть категорію препаратів:',
         keyboards.createTypesKeyboard());
     return;
 }
@@ -36,7 +36,7 @@ function sendCategories(ctx) {
 // Функція, що надсилає користувачу список продуктів за обраним типом продукції
 function sendProducts(ctx, productsType) {
     ctx.reply(
-        'Оберіть продукт:', 
+        'Оберіть препарат:', 
         keyboards.createProductsKeyboards()[productsType]
     );
     return;
@@ -105,8 +105,11 @@ function createCheckPriceScene() {
             const sessionPackageVariants = allProductsWithPrices[sessionProduct];
             const sessionPrice = sessionPackageVariants[packageType];
             
-            await ctx.replyWithHTML(answerTemplate(sessionProduct, packageType, sessionPrice));
-            return ctx.scene.leave();
+            await ctx.replyWithHTML(
+                answerTemplate(sessionProduct, packageType, sessionPrice), 
+                keyboards.createKeyboardInOneColumn([ 'Категорії препаратів' ])    
+            );
+            return ctx.wizard.next();
         });
     }
 
@@ -115,12 +118,21 @@ function createCheckPriceScene() {
         return ctx.wizard.back();
     });
 
+    const startAgain = new Composer();
+    startAgain.action('Категорії препаратів', async (ctx) => {
+        sendCategories(ctx);
+        ctx.wizard.back();
+        ctx.wizard.back();
+        ctx.wizard.back();
+    });
+
     const checkPriceScene = new Scenes.WizardScene(
         'checkPriceScene', 
         startCheckPriceScene, 
         selectProduct, 
         sendPackageVariants,
-        sendPrice
+        sendPrice,
+        startAgain
     );
 
     return checkPriceScene;

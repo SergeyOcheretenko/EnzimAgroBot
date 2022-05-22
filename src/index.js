@@ -18,11 +18,13 @@ const stage = new Scenes.Stage([
     dollarScene
 ]);
 
-bot.command('start', (ctx) => ctx.reply('Start'));
+bot.use(session(), stage.middleware());
+
+bot.command('start', (ctx) => {
+    ctx.scene.enter('checkPriceScene')
+});
 
 bot.command('help', (ctx) => ctx.reply('Help for using the system'));
-
-bot.use(session(), stage.middleware());
 
 // Оновлення та запуск сцени з цінами продукції Enzim Agro
 bot.command('price', (ctx) => {
