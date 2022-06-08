@@ -1,7 +1,7 @@
 'use strict';
 
 import { Markup } from 'telegraf';
-import { getXlsxData, getTypesList } from './parsers/parser.xlsx.js'
+import { getXlsxData, getTypesList } from './parsers/parser.xlsx.js';
 
 // *****************
 // ДОПОМІЖНІ ФУНКЦІЇ
@@ -16,6 +16,13 @@ function findNeededProductsByType(array, neededType) {
     }
 }
 
+function seperateNamesByLength(dataArray) {
+    const MAX_LENGTH = 20;
+    const shortNames = dataArray.filter(elem => elem.length <= MAX_LENGTH);
+    const longNames = dataArray.filter(elem => elem.length > MAX_LENGTH);
+    return [ shortNames, longNames ];
+}
+
 // Створення кнопки для Inline-клавіатури
 function button(elem) {
     return Markup.button.callback(elem, elem);
@@ -26,74 +33,50 @@ function button(elem) {
 // *****************************************
 
 // Створення масиву для клавіатури в один стовпчик
-function arrayForOneColumnKeyboard(dataArray) {
+function createButtonsOneColumn(dataArray) {
     return dataArray.map(elem => [ button(elem) ]);
 }
 
-// Створення клавіатури з парною кількістю елементів
-function evenNumberElements(dataArray) {
-    const arrayForKeyboard = [];
-
-    for (let i = 0; i < dataArray.length; i += 2) {
-        const currentElem = dataArray[i];
-        const nextElem = dataArray[i + 1];
-        arrayForKeyboard.push([ button(currentElem), button(nextElem) ]);
-    }
-    return arrayForKeyboard;
-}
-
-// Створення клавіатури з непарною кількістю елементів
-function oddNumberElements(dataArray) {
+function createButtonsTwoColumn(dataArray) {
     const len = dataArray.length;
-    const arrayForKeyboard = evenNumberElements(dataArray.slice(0, len - 1));
+    const buttons = [];
 
-    const lastElem = dataArray[len - 1];
-    arrayForKeyboard.push([ button(lastElem) ]);
-    return arrayForKeyboard;
+    for (let i = 0; i < len; i += 2) {
+        const firstElem = dataArray[i];
+        const secondElem = dataArray[i + 1];
+        buttons.push([ button(firstElem), button(secondElem) ]);
+    }
+
+    if (len % 2 !== 0) {
+        const lastElem = dataArray[len - 1];
+        buttons.push([ button(lastElem) ]);
+    }
+
+    return buttons;
 }
 
 // Створення масиву кнопок для клавіатури
 function createArrayForKeyboard(dataArray) {
-    const shortNames = dataArray.filter(elem => elem.length <= 20);
-    const longNames = dataArray.filter(elem => elem.length > 20);
+    const [ shortNames, longNames ] = seperateNamesByLength(data);
 
-    const arrayOfShortForKeyboard = (shortNames.length % 2 === 0 ?
-        evenNumberElements(shortNames) :
-        oddNumberElements(shortNames)
-    );
-    const arrayOfLongForKeyboard = arrayForOneColumnKeyboard(longNames);
+    const shortButtons = createButtonsOneColumn(shortNames);
+    const longButtons = createButtonsTwoColumn(longNames);
     
-    const arrayForKeyboard = [...arrayOfShortForKeyboard, ...arrayOfLongForKeyboard];
-    return arrayForKeyboard;
+    const allButtons = shortButtons.concat(longButtons);
+    return allButtons;
 }
 
 // *******************
 // СТВОРЕННЯ КЛАВІАТУР
 // *******************
 
-// КЛАВІАТУРА В ОДИН СТОВПЧИК
-// КЛАВІАТУРА З КНОПКОЮ "НАЗАД"
-// КЛАВІАТУРА З ТИПАМИ ПРОДУКЦІЇ
-// ХЕШ-ТАБЛИЦЯ КЛАВІАТУР ПРОДУКТІВ ВІДПОВІДНО ДО ТИПІВ
+function createKeyboard(dataArray, { backButton = false, oneColumn = false }) {
+    const buttons = oneColumn ? 
+        createButtonsOneColumn(dataArray) :
+        createArrayForKeyboard(dataArray);
 
-// Створення клавіатури в один стовпчик
-function createKeyboardInOneColumn(dataArray) {
-    const arrayForKeyboard = arrayForOneColumnKeyboard(dataArray);
-    return Markup.inlineKeyboard(arrayForKeyboard);
-}
-
-// Створення клавіатури з кнопкою "Назад"
-function createKeyboardWithBackButton(dataArray) {
-    const arrayForKeyboard = createArrayForKeyboard(dataArray);
-    arrayForKeyboard.push([ button('Назад') ]);
-    return Markup.inlineKeyboard(arrayForKeyboard);
-}
-
-// Створення клавіатури з категоріями продуктів
-function createTypesKeyboard() {
-    const typesList = getTypesList();
-    const arrayForKeyboard = createArrayForKeyboard(typesList);
-    return Markup.inlineKeyboard(arrayForKeyboard);
+    if (backButton) buttons.push([ button('Назад') ]);
+    return Markup.inlineKeyboard(buttons);         
 }
 
 // Створення клавіатур для кожної категорії продуктів
@@ -106,7 +89,7 @@ function createProductsKeyboards() {
     for (const type of typesList) {
         const productsList = findNeededProductsByType(xlsxData, type).products;
         const productsNames = productsList.map(elem => elem.name);
-        keyboardsByTypes[type] = createKeyboardWithBackButton(productsNames);
+        keyboardsByTypes[type] = createKeyboard(productsNames, { backButton: true });
     }
 
     return keyboardsByTypes;
@@ -117,9 +100,6 @@ function createProductsKeyboards() {
 // ********
 
 export {
-    getTypesList,
-    createTypesKeyboard,
-    createProductsKeyboards,
-    createKeyboardWithBackButton,
-    createKeyboardInOneColumn
+    createKeyboard,
+    createProductsKeyboards
 };
