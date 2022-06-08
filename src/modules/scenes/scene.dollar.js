@@ -4,7 +4,8 @@ import { Scenes, Composer, session } from 'telegraf';
 
 import { createKeyboardInOneColumn } from '../keyboards.js';
 import getAdmins from '../admins-list.js';
-import { parseJSON, updateJSON } from '../work-with-json.js';
+import parseTXT from '../parsers/parser.txt.js';
+import { updateJSON } from '../parsers/parser.json.js';
 
 // Перевірка чи є рядок числом
 function checkIsNumber(str) {
@@ -13,8 +14,8 @@ function checkIsNumber(str) {
 
 // Повернення курсу USD з файлу JSON
 function checkDollarRate() {
-    const dollarJsonObject = parseJSON('src/json/dollar-rate.json');
-    return dollarJsonObject.dollarRate;
+    const dollarString = parseTXT('/home/ocheretenko/kurs.txt').replace(',', '.');
+    return Number(dollarString);
 }
 
 const sendFunctionality = new Composer();

@@ -1,6 +1,6 @@
 'use strict';
 
-import { parseJSON } from "./work-with-json.js";
+import { parseJSON } from "./parsers/parser.json.js";
 
 // Отримання списку адміністраторів
 export default function getAdmins() {

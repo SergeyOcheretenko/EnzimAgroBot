@@ -3,9 +3,9 @@
 import { Telegraf, Scenes, session } from 'telegraf';
 
 
-import { parseJSON } from './modules/work-with-json.js';
-import { createCheckPriceScene } from './modules/scenes/check-price.js';
-import { dollarScene } from './modules/scenes/dollar-scene.js';
+import { parseJSON } from './modules/parsers/parser.json.js';
+import { createCheckPriceScene } from './modules/scenes/scene.price.js';
+import { dollarScene } from './modules/scenes/scene.dollar.js';
 
 const CONFIG = parseJSON('CONFIG.json');
 const BOT_TOKEN = CONFIG.bot_token;

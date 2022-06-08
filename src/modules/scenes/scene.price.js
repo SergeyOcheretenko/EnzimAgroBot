@@ -3,8 +3,8 @@
 import { Scenes, Composer, session } from 'telegraf';
 
 import * as keyboards from '../keyboards.js';
-import { checkDollarRate } from './dollar-scene.js';
-import { getProductsWithPrices, getAllPackageVariants } from '../parse-xlsx.js';
+import { checkDollarRate } from './scene.dollar.js';
+import { getProductsWithPrices, getAllPackageVariants } from '../parsers/parser.xlsx.js';
 
 // *****************
 // ДОПОМІЖНІ ФУНКЦІЇ
