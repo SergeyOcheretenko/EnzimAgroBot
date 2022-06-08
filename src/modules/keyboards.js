@@ -1,8 +1,7 @@
 'use strict';
 
 import { Markup } from 'telegraf';
-
-import { getXlsxData, getTypesList } from './parse-xlsx.js'
+import { getXlsxData, getTypesList } from './parsers/parser.xlsx.js'
 
 // *****************
 // ДОПОМІЖНІ ФУНКЦІЇ
