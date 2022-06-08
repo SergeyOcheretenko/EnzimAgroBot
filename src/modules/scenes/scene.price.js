@@ -3,23 +3,18 @@
 import { Scenes, Composer, session } from 'telegraf';
 
 import * as keyboards from '../keyboards.js';
-import { checkDollarRate } from './scene.dollar.js';
 import { getProductsWithPrices, getAllPackageVariants } from '../parsers/parser.xlsx.js';
+import { getUAHPrice } from '../currency/currency.js';
 
 // *****************
 // ДОПОМІЖНІ ФУНКЦІЇ
 // *****************
 
-function convertUSD(price) {
-    const dollarRate = checkDollarRate();
-    return Math.round(price * dollarRate * 100) / 100;
-}
-
 function answerTemplate(product, packageType, priceInUSD) {
     return `<b>Продукт:</b> ${product}\n` + 
         `<b>Упаковка:</b> ${packageType}\n` +
         `<b>Ціна в USD:</b> ${priceInUSD} USD\n` + 
-        `<b>Ціна в ГРН:</b> ${convertUSD(priceInUSD)} грн.`
+        `<b>Ціна в ГРН:</b> ${getUAHPrice(priceInUSD)} грн.`
 }
 
 // *************************************************************
@@ -52,6 +47,7 @@ function convertObjectToArray(object) {
 
 // *****************************************************************
 // ФУНКЦІЯ, ЩО ДИНАМІЧНО СТВОРЮЄ СЦЕНУ ПРИ ЗАПУСКУ ФУНКЦІЇ
+//
 // ПЕРЕСТВОРЕННЯ СЦЕНИ ПОТРІБНЕ ДЛЯ ДИНАМІЧНОГО СТВОРЕННЯ ОБРОБНИКІВ 
 // КНОПОК В ЗАЛЕЖНОСТІ ВІД ПОТОЧНОГО СТАНУ XLSX-ФАЙЛУ
 // *****************************************************************
@@ -138,4 +134,4 @@ function createCheckPriceScene() {
     return checkPriceScene;
 }
 
-export { createCheckPriceScene };
+export default createCheckPriceScene;

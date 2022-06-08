@@ -1,21 +1,16 @@
 'use strict';
 
 import { Telegraf, Scenes, session } from 'telegraf';
+import config from '../CONFIG.js'
+import createCheckPriceScene     from './modules/scenes/scene.price.js';
+import { getUSDRate } from './modules/currency/currency.js';
 
-
-import { parseJSON } from './modules/parsers/parser.json.js';
-import { createCheckPriceScene } from './modules/scenes/scene.price.js';
-import { dollarScene } from './modules/scenes/scene.dollar.js';
-
-const CONFIG = parseJSON('CONFIG.json');
-const BOT_TOKEN = CONFIG.bot_token;
-const bot = new Telegraf(BOT_TOKEN);
+const bot = new Telegraf(config.BOT_TOKEN);
 
 let checkPriceScene = createCheckPriceScene();
 
 const stage = new Scenes.Stage([
-    checkPriceScene,
-    dollarScene
+    checkPriceScene
 ]);
 
 bot.use(session(), stage.middleware());
@@ -33,7 +28,7 @@ bot.command('price', (ctx) => {
 });
 
 bot.command('dollar', async (ctx) => {
-    await ctx.scene.enter('dollarScene');
+    await ctx.replyWithHTML(`Поточний курс USD: <b>${getUSDRate()} грн.</b>`);
 });
 
 bot.launch();
