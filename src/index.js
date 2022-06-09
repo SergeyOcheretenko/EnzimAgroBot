@@ -4,9 +4,6 @@ import { Telegraf, Scenes, session } from 'telegraf';
 import config from '../CONFIG.js'
 import createCheckPriceScene     from './modules/scenes/scene.price.js';
 import { getUSDRate } from './modules/currency/currency.js';
-import {getXlsxData} from './modules/parsers/parser.xlsx.js';
-const obj = getXlsxData();
-console.dir({ obj }, {depth: 20});
 
 const bot = new Telegraf(config.BOT_TOKEN);
 

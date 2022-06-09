@@ -36,8 +36,12 @@ function filterByUnit(sales, unit) {
 
 // Отриманная матриці XLSX-таблиці
 function parseNotformattedData() {
-    const xlsxAllData = xlsx.parse('src/xlsx/price.xlsx')[0].data;
-    return xlsxAllData.filter(row => row.length != 0);
+    try {
+        const xlsxAllData = xlsx.parse('src/xlsx/price.xlsx')[0].data;
+        return xlsxAllData.filter(row => row.length != 0);
+    } catch (err) {
+        console.log(err);
+    }
 }
 
 // Форматування та конвертування у формат hash-table отриманих XLSX-даних
@@ -120,7 +124,7 @@ function getProductsWithPrices() {
 
         for (const product of products) {
             const productName = product.name;
-            const sales = productObject.sales;
+            const sales = product.sales;
             const pricesByPackage = {};
             
             for (const saleVariant of sales) {

@@ -1,20 +1,11 @@
 'use strict';
 
 import { Markup } from 'telegraf';
-import { getXlsxData, getTypesList } from './parsers/parser.xlsx.js';
+import { getXlsxData } from './parsers/parser.xlsx.js';
 
 // *****************
 // ДОПОМІЖНІ ФУНКЦІЇ
 // *****************
-
-// Функція, яка знаходить потрібний об'єкт з видом продукції та продуктами цього виду
-function findNeededProductsByType(array, neededType) {
-    for (const object of array) {
-        if (object.productType === neededType) {
-            return object;
-        }
-    }
-}
 
 function seperateNamesByLength(dataArray) {
     const MAX_LENGTH = 20;
@@ -41,9 +32,9 @@ function createButtonsTwoColumn(dataArray) {
     const len = dataArray.length;
     const buttons = [];
 
-    for (let i = 0; i < len; i += 2) {
-        const firstElem = dataArray[i];
-        const secondElem = dataArray[i + 1];
+    for (let i = 1; i < len; i += 2) {
+        const firstElem = dataArray[i - 1];
+        const secondElem = dataArray[i];
         buttons.push([ button(firstElem), button(secondElem) ]);
     }
 
@@ -57,10 +48,10 @@ function createButtonsTwoColumn(dataArray) {
 
 // Створення масиву кнопок для клавіатури
 function createArrayForKeyboard(dataArray) {
-    const [ shortNames, longNames ] = seperateNamesByLength(data);
+    const [ shortNames, longNames ] = seperateNamesByLength(dataArray);
 
-    const shortButtons = createButtonsOneColumn(shortNames);
-    const longButtons = createButtonsTwoColumn(longNames);
+    const shortButtons = createButtonsTwoColumn(shortNames);
+    const longButtons = createButtonsOneColumn(longNames);
     
     const allButtons = shortButtons.concat(longButtons);
     return allButtons;
@@ -70,25 +61,24 @@ function createArrayForKeyboard(dataArray) {
 // СТВОРЕННЯ КЛАВІАТУР
 // *******************
 
-function createKeyboard(dataArray, { backButton = false, oneColumn = false }) {
-    const buttons = oneColumn ? 
+function createKeyboard(dataArray, params = { backButton: false, oneColumn: false }) {
+    const buttons = params.oneColumn ? 
         createButtonsOneColumn(dataArray) :
         createArrayForKeyboard(dataArray);
 
-    if (backButton) buttons.push([ button('Назад') ]);
+    if (params.backButton) buttons.push([ button('Назад') ]);
     return Markup.inlineKeyboard(buttons);         
 }
 
 // Створення клавіатур для кожної категорії продуктів
 function createProductsKeyboards() {
-    const keyboardsByTypes = {};
-    
-    const typesList = getTypesList();
     const xlsxData = getXlsxData();
+    const typesList = Object.keys(xlsxData);
+    const keyboardsByTypes = {};
 
     for (const type of typesList) {
-        const productsList = findNeededProductsByType(xlsxData, type).products;
-        const productsNames = productsList.map(elem => elem.name);
+        const products = xlsxData[type];
+        const productsNames = products.map(elem => elem.name);
         keyboardsByTypes[type] = createKeyboard(productsNames, { backButton: true });
     }
 
