@@ -3,7 +3,7 @@
 import { Scenes, Composer, session } from 'telegraf';
 
 import * as keyboards from '../keyboards.js';
-import { getProductsWithPrices, getAllPackageVariants } from '../parsers/parser.xlsx.js';
+import { getTypesList, getProductsWithPrices, getAllPackageVariants } from '../parsers/parser.xlsx.js';
 import { getUAHPrice } from '../currency/currency.js';
 
 // *****************
@@ -23,26 +23,20 @@ function answerTemplate(product, packageType, priceInUSD) {
 
 // Функція, що надсилає список категорій користувачу
 function sendCategories(ctx) {
+    const productTypes = getTypesList();
     ctx.reply('Оберіть категорію препаратів:',
-        keyboards.createTypesKeyboard());
+        keyboards.createKeyboard( productTypes ));
     return;
 }
 
 // Функція, що надсилає користувачу список продуктів за обраним типом продукції
-function sendProducts(ctx, productsType) {
+function sendProducts(ctx, productType) {
+    const keyboardsByTypes = keyboards.createProductsKeyboards();
     ctx.reply(
         'Оберіть препарат:', 
-        keyboards.createProductsKeyboards()[productsType]
+        keyboardsByTypes[productType]
     );
     return;
-}
-
-function convertObjectToArray(object) {
-    const array = [];
-    for (const key in object) {
-        array.push(key);
-    }
-    return array;
 }
 
 // *****************************************************************
@@ -62,11 +56,11 @@ function createCheckPriceScene() {
 
     // Другий крок сцени - надсилання списку продуктів обраної категорії
     const selectProduct = new Composer();
-    for (const productsType of keyboards.getTypesList()) {
-        selectProduct.action(productsType, async (ctx) => {
-            ctx.session.productsType = productsType;
+    for (const type of getTypesList()) {
+        selectProduct.action(type, async (ctx) => {
+            ctx.session.type = type;
             
-            await sendProducts(ctx, productsType);
+            await sendProducts(ctx, type);
             return ctx.wizard.next();
         });
     }
@@ -79,10 +73,10 @@ function createCheckPriceScene() {
         sendPackageVariants.action(product, async (ctx) => {
             ctx.session.product = product;
 
-            const productSaleVariants = allProductsWithPrices[product];
-            const packageVariantsArray = convertObjectToArray(productSaleVariants);
+            const productSales = allProductsWithPrices[product];
+            const packageVariants = Object.keys(productSales);
             await ctx.reply('Оберіть варіант упаковки:', 
-                keyboards.createKeyboardWithBackButton(packageVariantsArray));
+                keyboards.createKeyboard(packageVariants, { backButton: true }));
                 
             return ctx.wizard.next();
         });
@@ -98,19 +92,19 @@ function createCheckPriceScene() {
     for (const packageType of getAllPackageVariants()) {
         sendPrice.action(packageType, async (ctx) => {
             const sessionProduct = ctx.session.product;
-            const sessionPackageVariants = allProductsWithPrices[sessionProduct];
-            const sessionPrice = sessionPackageVariants[packageType];
+            const packagesWithPrice = allProductsWithPrices[sessionProduct];
+            const sessionPrice = packagesWithPrice[packageType];
             
             await ctx.replyWithHTML(
                 answerTemplate(sessionProduct, packageType, sessionPrice), 
-                keyboards.createKeyboardInOneColumn([ 'Категорії препаратів' ])    
+                keyboards.createKeyboard([ 'Категорії препаратів' ], { oneColumn: true })    
             );
             return ctx.wizard.next();
         });
     }
 
     sendPrice.action('Назад', (ctx) => {
-        sendProducts(ctx, ctx.session.productsType);
+        sendProducts(ctx, ctx.session.type);
         return ctx.wizard.back();
     });
 
