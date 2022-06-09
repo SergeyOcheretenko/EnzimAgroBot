@@ -6,33 +6,28 @@ import xlsx from 'node-xlsx';
 // ДОПОМІЖНІ ФУНКЦІЇ
 // *****************
 
-// Отримання "довжини" об'єкту
-function getObjectLength(object) {
-    return Object.keys(object).length;
-}
-
 // Видалення першого рядку XLSX-таблиці
 function deleteXlsxTitle(xlsxData) {
     return xlsxData.slice(1,);
 }
 
 // Перевірка наявності типів пакувань "кг", "л" та "пак"
-function checkUnits(saleArray) {
+function checkUnits(sales) {
     const unitsExisting = {
         'кг': false,
         'л': false,
         'пак': false
     };
-    for (const saleVariant of saleArray) {
-        const currentVariantUnit = saleVariant.unit.toLowerCase();
-        unitsExisting[currentVariantUnit] = true;
+    for (const saleVariant of sales) {
+        const unit = saleVariant.unit.toLowerCase();
+        unitsExisting[unit] = true;
     }
     return unitsExisting;
 }
 
 // Функція, що повертая масив варіантів продажу лише в обраній одиниці вимірювання
-function filterByUnit(saleArray, unit) {
-    return saleArray.filter(saleVariant => saleVariant.unit === unit);
+function filterByUnit(sales, unit) {
+    return sales.filter(saleVariant => saleVariant.unit === unit);
 }
 
 // *******************************************
@@ -48,63 +43,61 @@ function parseNotformattedData() {
 // Форматування та конвертування у формат hash-table отриманих XLSX-даних
 function getDataWithoutUnitFormat() {
     const xlsxData = deleteXlsxTitle(parseNotformattedData());
+    const resultData = {};
 
-    const sortByTypeArray = [];
-    let typeAndProducts = {};
     let products = [];
+    let currentType = null;
 
     for (const row of xlsxData) {
         if (row.length === 1) {
-            if (getObjectLength(typeAndProducts) !== 0) {
-                typeAndProducts.products = products;
-                sortByTypeArray.push(typeAndProducts);
-                typeAndProducts = {};
+            if (products.length !== 0) {
+                resultData[currentType] = products;
                 products = [];
             }
-
-            typeAndProducts.productType = row[0];
+            currentType = row[0];
         } else {
-            const [productName, packageType, price, unit] = row;
-            if (productName != null) {
+            const [name, packageType, price, unit] = row;
+            if (name != null) {
                 const product = {
-                    name: productName,
-                    sale: [{ packageType, price, unit }]
+                    name: name,
+                    sales: [{ packageType, price, unit }]
                 };
                 products.push(product);
             } else {
-                products[products.length - 1].sale.push({ packageType, price, unit });
+                products[products.length - 1].sales.push({ packageType, price, unit });
             }
         }
     }
-    typeAndProducts.products = products;
-    sortByTypeArray.push(typeAndProducts);
-    return sortByTypeArray;
+    resultData[currentType] = products;
+    return resultData;
 }
 
 // Форматування даних для розподілення сухої та рідкої продукції
-function formatProductsList(productsArray) {
-    const newProductsList = [];
+function formatByUnits(products) {
+    const newProducts = [];
 
-    for (const productObject of productsArray) {
-        const unitsExisting = checkUnits(productObject.sale);
+    for (const product of products) {
+        const unitsExisting = checkUnits(product.sales);
 
         for (const unit in unitsExisting) {
             if (unitsExisting[unit]) {
-                newProductsList.push({
-                    name: productObject.name + ` (${unit})`,
-                    sale: filterByUnit(productObject.sale, unit)
+                newProducts.push({
+                    name: product.name + ` (${unit})`,
+                    sales: filterByUnit(product.sales, unit)
                 });
             }
         }
     }
-
-    return newProductsList;
+    return newProducts;
 }
 
 // Зчитування XLSX-даних з повним форматуванням даних
 function getXlsxData() {
     const xlsxData = getDataWithoutUnitFormat();
-    xlsxData.forEach(productsByTypeObject => productsByTypeObject.products = formatProductsList(productsByTypeObject.products));
+    for (const type in xlsxData) {
+        const products = xlsxData[type];
+        xlsxData[type] = formatByUnits(products);
+    }
     return xlsxData;
 }
 
@@ -115,31 +108,27 @@ function getXlsxData() {
 // Отримання категорій продуктів Enzim Agro з отриманих XLSX-даних
 function getTypesList() {
     const xlsxData = getXlsxData();
-    const types = [];
-    for (const productTypeObject of xlsxData) {
-        types.push(productTypeObject.productType);
-    }
-    return types;
+    return Object.keys(xlsxData);
 }
 
 // Отримання об'єкту "продукт: упаковка: ціна"
 function getProductsWithPrices() {
     const allProductsWithPrices = {};
     const xlsxData = getXlsxData();
-    for (const objectByType of xlsxData) {
-        const products = objectByType.products;
+    for (const type in xlsxData) {
+        const products = xlsxData[type];
 
-        for (const productObject of products) {
-            const productName = productObject.name;
-            const productSaleVariants = productObject.sale;
-            const productPricesByPackageType = {};
+        for (const product of products) {
+            const productName = product.name;
+            const sales = productObject.sales;
+            const pricesByPackage = {};
             
-            for (const saleVariant of productSaleVariants) {
+            for (const saleVariant of sales) {
                 const packageType = saleVariant.packageType;
                 const price = saleVariant.price;
-                productPricesByPackageType[packageType] = price;
+                pricesByPackage[packageType] = price;
             }
-            allProductsWithPrices[productName] = productPricesByPackageType;
+            allProductsWithPrices[productName] = pricesByPackage;
         }
     }
     return allProductsWithPrices;
@@ -147,17 +136,17 @@ function getProductsWithPrices() {
 
 // Отримання усіх існуючих варіантів пакувань
 function getAllPackageVariants() {
-    const packageVariants = [];
+    const packages = [];
     
-    const productsWithPrices = getProductsWithPrices();
-    for (const productName in productsWithPrices) {
-        for (const packageType in productsWithPrices[productName]) {
-            if (!packageVariants.includes(packageType)) {
-                packageVariants.push(packageType);
+    const products = getProductsWithPrices();
+    for (const productName in products) {
+        for (const packageType in products[productName]) {
+            if (!packages.includes(packageType)) {
+                packages.push(packageType);
             }
         }
     }
-    return packageVariants;
+    return packages;
 }
 
 export { 
