@@ -2,7 +2,7 @@
 
 import { Scenes, Composer, session } from 'telegraf';
 
-import * as keyboards from '../keyboards.js';
+import Keyboard from '../keyboards/Keyboard.js';
 import { getTypesList, getProductsWithPrices, getAllPackageVariants } from '../parsers/parser.xlsx.js';
 import { getUAHPrice } from '../currency/currency.js';
 
@@ -25,13 +25,13 @@ function answerTemplate(product, packageType, priceInUSD) {
 function sendCategories(ctx) {
     const productTypes = getTypesList();
     ctx.reply('Оберіть категорію препаратів:',
-        keyboards.createKeyboard( productTypes ));
+        Keyboard.createKeyboard( productTypes ));
     return;
 }
 
 // Функція, що надсилає користувачу список продуктів за обраним типом продукції
 function sendProducts(ctx, productType) {
-    const keyboardsByTypes = keyboards.createProductsKeyboards();
+    const keyboardsByTypes = Keyboard.createProductsKeyboards();
     ctx.reply(
         'Оберіть препарат:', 
         keyboardsByTypes[productType]
@@ -76,7 +76,7 @@ function createCheckPriceScene() {
             const productSales = allProductsWithPrices[product];
             const packageVariants = Object.keys(productSales);
             await ctx.reply('Оберіть варіант упаковки:', 
-                keyboards.createKeyboard(packageVariants, { backButton: true }));
+                Keyboard.createKeyboard(packageVariants, { backButton: true }));
                 
             return ctx.wizard.next();
         });
@@ -97,7 +97,7 @@ function createCheckPriceScene() {
             
             await ctx.replyWithHTML(
                 answerTemplate(sessionProduct, packageType, sessionPrice), 
-                keyboards.createKeyboard([ 'Категорії препаратів' ], { oneColumn: true })    
+                Keyboard.createKeyboard([ 'Категорії препаратів' ], { oneColumn: true })    
             );
             return ctx.wizard.next();
         });
