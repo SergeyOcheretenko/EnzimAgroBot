@@ -2,9 +2,9 @@
 
 import { Scenes, Composer, session } from 'telegraf';
 
-import Keyboard from '../keyboards/Keyboard.js';
-import { getTypesList, getProductsWithPrices, getAllPackageVariants } from '../parsers/parser.xlsx.js';
 import { getUAHPrice } from '../currency/currency.js';
+import Keyboard from '../keyboards/Keyboard.js';
+import ProductController from '../ProductController.js';
 
 // *****************
 // ДОПОМІЖНІ ФУНКЦІЇ
@@ -23,7 +23,7 @@ function answerTemplate(product, packageType, priceInUSD) {
 
 // Функція, що надсилає список категорій користувачу
 function sendCategories(ctx) {
-    const productTypes = getTypesList();
+    const productTypes = ProductController.getTypeList();
     ctx.reply('Оберіть категорію препаратів:',
         Keyboard.createKeyboard( productTypes ));
     return;
@@ -31,10 +31,10 @@ function sendCategories(ctx) {
 
 // Функція, що надсилає користувачу список продуктів за обраним типом продукції
 function sendProducts(ctx, productType) {
-    const keyboardsByTypes = Keyboard.createProductsKeyboards();
+    const productsOfThisType = ProductController.getProductsByType(productType);
     ctx.reply(
         'Оберіть препарат:', 
-        keyboardsByTypes[productType]
+        Keyboard.createKeyboard(productsOfThisType, { backButton: true })
     );
     return;
 }
@@ -56,7 +56,8 @@ function createCheckPriceScene() {
 
     // Другий крок сцени - надсилання списку продуктів обраної категорії
     const selectProduct = new Composer();
-    for (const type of getTypesList()) {
+    const typeList = ProductController.getTypeList();
+    for (const type of typeList) {
         selectProduct.action(type, async (ctx) => {
             ctx.session.type = type;
             
@@ -67,7 +68,7 @@ function createCheckPriceScene() {
 
     // Третій крок сцени - надсилання варіантів упаковки
     const sendPackageVariants = new Composer();
-    const allProductsWithPrices = getProductsWithPrices();
+    const allProductsWithPrices = ProductController.getAllProductsWithPrices();
     
     for (const product in allProductsWithPrices) {
         sendPackageVariants.action(product, async (ctx) => {
@@ -89,7 +90,8 @@ function createCheckPriceScene() {
 
     // Четвертий крок сцени - отримання ціни продукту після обирання варіанту упаковки
     const sendPrice = new Composer();
-    for (const packageType of getAllPackageVariants()) {
+    const allPackages = ProductController.getAllPackageVariants();
+    for (const packageType of allPackages) {
         sendPrice.action(packageType, async (ctx) => {
             const sessionProduct = ctx.session.product;
             const packagesWithPrice = allProductsWithPrices[sessionProduct];
