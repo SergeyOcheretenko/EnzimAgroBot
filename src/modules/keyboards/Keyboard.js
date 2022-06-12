@@ -1,7 +1,7 @@
 'use strict';
 
 import { Markup } from "telegraf";
-import { getXlsxData } from "../parsers/parser.xlsx.js";
+import getXlsxData from "../parsers/parser.xlsx.js";
 import Buttons from "./Buttons.js";
 
 class Keyboard {
