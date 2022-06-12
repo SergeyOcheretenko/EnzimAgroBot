@@ -2,6 +2,16 @@
 
 import getXlsxData from "./parsers/parser.xlsx.js";
 
+Array.prototype.removeDuplicate = function() {
+    const arrayWithoutDuplicate = [];
+    for (const elem of this) {
+        if (!arrayWithoutDuplicate.includes(elem)) {
+            arrayWithoutDuplicate.push(elem);
+        }
+    }
+    return arrayWithoutDuplicate;
+}
+
 class ProductController {
     constructor() {
         this._xlsxData = getXlsxData();
@@ -13,43 +23,46 @@ class ProductController {
 
     getTypeList() {
         this.renderData();
-        return Object.keys(this._xlsxData);
+        return this._xlsxData
+            .map(elem => elem.type)
+            .removeDuplicate();
+    }
+
+    getProductList() {
+        this.renderData();
+        return this._xlsxData
+            .map(elem => elem.productName)
+            .removeDuplicate();
     }
 
     getProductsByType(type) {
         this.renderData();
-        const products = this._xlsxData[type];
-        return products.map(elem => elem.name);
+        return this._xlsxData
+            .filter(elem => elem.type === type)
+            .map(elem => elem.productName)
+            .removeDuplicate();
     }
 
-    getAllProductsWithPrices() {
-        const productsWithPrices = {};
-        for (const type in this._xlsxData) {
-            const products = this._xlsxData[type];
-            for (const product of products) {
-                const { name, sales } = product;
-                const pricesByPackage = {};
-                sales.forEach(sale => {
-                    pricesByPackage[sale.packageType] = sale.price;
-                });
-                productsWithPrices[name] = pricesByPackage;
-            }
-        }
-        return productsWithPrices;
+    getPackagesByName(productName) {
+        this.renderData();
+        return this._xlsxData
+            .filter(elem => elem.productName === productName)
+            .map(elem => elem.packageType);
+    }
+
+    getPriceByNameAndPackage(productName, packageType) {
+        this.renderData();
+        return this._xlsxData.find(elem => 
+            elem.productName === productName &&
+            elem.packageType === packageType)
+            .price;
     }
 
     getAllPackageVariants() {
-        const packages = [];
-        const products = this.getAllProductsWithPrices();
-        for (const productName in products) {
-            const product = products[productName];
-            for (const packageType in product) {
-                if (!packages.includes(packageType)) {
-                    packages.push(packageType);
-                }
-            }
-        }
-        return packages;
+        this.renderData();
+        return this._xlsxData
+            .map(elem => elem.packageType)
+            .removeDuplicate();
     }
 }
 

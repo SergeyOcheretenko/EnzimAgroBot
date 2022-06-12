@@ -2,8 +2,8 @@
 
 import { Telegraf, Scenes, session } from 'telegraf';
 import config from '../CONFIG.js'
-import createCheckPriceScene     from './modules/scenes/scene.price.js';
-import { getUSDRate } from './modules/currency/currency.js';
+import createCheckPriceScene from './modules/scenes/scene.price.js';
+import Currency from './modules/Currency.js';
 
 const bot = new Telegraf(config.BOT_TOKEN);
 
@@ -28,7 +28,7 @@ bot.command('price', (ctx) => {
 });
 
 bot.command('dollar', async (ctx) => {
-    await ctx.replyWithHTML(`Поточний курс USD: <b>${getUSDRate()} грн.</b>`);
+    await ctx.replyWithHTML(`Поточний курс USD: <b>${Currency.getUSDRate()} грн.</b>`);
 });
 
 bot.launch();

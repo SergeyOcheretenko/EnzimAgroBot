@@ -2,9 +2,10 @@
 
 import { Scenes, Composer, session } from 'telegraf';
 
-import { getUAHPrice } from '../currency/currency.js';
+import Currency from '../Currency.js';
 import Keyboard from '../keyboards/Keyboard.js';
 import ProductController from '../ProductController.js';
+import Session from './Session.js';
 
 // *****************
 // ДОПОМІЖНІ ФУНКЦІЇ
@@ -14,7 +15,7 @@ function answerTemplate(product, packageType, priceInUSD) {
     return `<b>Продукт:</b> ${product}\n` + 
         `<b>Упаковка:</b> ${packageType}\n` +
         `<b>Ціна в USD:</b> ${priceInUSD} USD\n` + 
-        `<b>Ціна в ГРН:</b> ${getUAHPrice(priceInUSD)} грн.`
+        `<b>Ціна в ГРН:</b> ${Currency.convertToUAH(priceInUSD)} грн.`
 }
 
 // *************************************************************
@@ -31,10 +32,10 @@ function sendCategories(ctx) {
 
 // Функція, що надсилає користувачу список продуктів за обраним типом продукції
 function sendProducts(ctx, productType) {
-    const productsOfThisType = ProductController.getProductsByType(productType);
+    const productsByType = ProductController.getProductsByType(productType);
     ctx.reply(
         'Оберіть препарат:', 
-        Keyboard.createKeyboard(productsOfThisType, { backButton: true })
+        Keyboard.createKeyboard(productsByType, { backButton: true })
     );
     return;
 }
@@ -55,50 +56,48 @@ function createCheckPriceScene() {
     });
 
     // Другий крок сцени - надсилання списку продуктів обраної категорії
-    const selectProduct = new Composer();
+    const sendProductsByType = new Composer();
     const typeList = ProductController.getTypeList();
+
     for (const type of typeList) {
-        selectProduct.action(type, async (ctx) => {
-            ctx.session.type = type;
-            
+        sendProductsByType.action(type, async (ctx) => {
+            Session.type = type;
             await sendProducts(ctx, type);
             return ctx.wizard.next();
         });
     }
 
     // Третій крок сцени - надсилання варіантів упаковки
-    const sendPackageVariants = new Composer();
-    const allProductsWithPrices = ProductController.getAllProductsWithPrices();
+    const sendPacksByProduct = new Composer();
+    const productList = ProductController.getProductList();
     
-    for (const product in allProductsWithPrices) {
-        sendPackageVariants.action(product, async (ctx) => {
-            ctx.session.product = product;
+    for (const productName of productList) {
+        sendPacksByProduct.action(productName, async (ctx) => {
+            Session.productName = productName;
 
-            const productSales = allProductsWithPrices[product];
-            const packageVariants = Object.keys(productSales);
+            const packs = ProductController.getPackagesByName(productName);
             await ctx.reply('Оберіть варіант упаковки:', 
-                Keyboard.createKeyboard(packageVariants, { backButton: true }));
+                Keyboard.createKeyboard(packs, { backButton: true }));
                 
             return ctx.wizard.next();
         });
     }
 
-    sendPackageVariants.action('Назад', (ctx) => {
+    sendPacksByProduct.action('Назад', (ctx) => {
         sendCategories(ctx);
         return ctx.wizard.back();
     });
 
     // Четвертий крок сцени - отримання ціни продукту після обирання варіанту упаковки
     const sendPrice = new Composer();
-    const allPackages = ProductController.getAllPackageVariants();
-    for (const packageType of allPackages) {
-        sendPrice.action(packageType, async (ctx) => {
-            const sessionProduct = ctx.session.product;
-            const packagesWithPrice = allProductsWithPrices[sessionProduct];
-            const sessionPrice = packagesWithPrice[packageType];
+    const allPacks = ProductController.getAllPackageVariants();
+    for (const pack of allPacks) {
+        sendPrice.action(pack, async (ctx) => {
+            const sessionProduct = Session.productName;
+            const sessionPrice = ProductController.getPriceByNameAndPackage(sessionProduct, pack);
             
             await ctx.replyWithHTML(
-                answerTemplate(sessionProduct, packageType, sessionPrice), 
+                answerTemplate(sessionProduct, pack, sessionPrice), 
                 Keyboard.createKeyboard([ 'Категорії препаратів' ], { oneColumn: true })    
             );
             return ctx.wizard.next();
@@ -106,7 +105,7 @@ function createCheckPriceScene() {
     }
 
     sendPrice.action('Назад', (ctx) => {
-        sendProducts(ctx, ctx.session.type);
+        sendProducts(ctx, Session.type);
         return ctx.wizard.back();
     });
 
@@ -121,8 +120,8 @@ function createCheckPriceScene() {
     const checkPriceScene = new Scenes.WizardScene(
         'checkPriceScene', 
         startCheckPriceScene, 
-        selectProduct, 
-        sendPackageVariants,
+        sendProductsByType, 
+        sendPacksByProduct,
         sendPrice,
         startAgain
     );
