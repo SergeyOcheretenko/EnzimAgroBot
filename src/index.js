@@ -3,7 +3,6 @@
 import { Telegraf, Scenes, session } from 'telegraf';
 import config from '../CONFIG.js'
 import createCheckPriceScene from './modules/scenes/scene.price.js';
-import Currency from './modules/Currency.js';
 
 const bot = new Telegraf(config.BOT_TOKEN);
 
@@ -13,22 +12,24 @@ const stage = new Scenes.Stage([
     checkPriceScene
 ]);
 
+function startPriceScene(ctx) {
+    checkPriceScene = createCheckPriceScene();
+    ctx.scene.enter('checkPriceScene');
+}
+
 bot.use(session(), stage.middleware());
 
 bot.command('start', (ctx) => {
-    ctx.scene.enter('checkPriceScene')
+    startPriceScene(ctx);
 });
-
-bot.command('help', (ctx) => ctx.reply('Help for using the system'));
 
 // Оновлення та запуск сцени з цінами продукції Enzim Agro
 bot.command('price', (ctx) => {
-    checkPriceScene = createCheckPriceScene();
-    ctx.scene.enter('checkPriceScene');
+    startPriceScene(ctx);
 });
 
-bot.command('dollar', async (ctx) => {
-    await ctx.replyWithHTML(`Поточний курс USD: <b>${Currency.getUSDRate()} грн.</b>`);
+bot.command('help', (ctx) => {
+    ctx.reply('Щоб дізнатися ціну продукції, запустіть команду /price');
 });
 
 bot.launch();
