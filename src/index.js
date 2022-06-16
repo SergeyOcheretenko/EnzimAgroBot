@@ -23,7 +23,6 @@ bot.command('start', (ctx) => {
     startPriceScene(ctx);
 });
 
-// Оновлення та запуск сцени з цінами продукції Enzim Agro
 bot.command('price', (ctx) => {
     startPriceScene(ctx);
 });
