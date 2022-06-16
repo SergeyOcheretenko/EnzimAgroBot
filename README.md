@@ -14,5 +14,5 @@
 **Update:** наступна версія програми буде переведена на MongoDB.
 
 ### Author
-Telegram: [Sergey Ocheretenko](https://t.me/OcheretenkoS).
-Email: [ocheretenko.s@gmail.com](mailto:ocheretenko.s@gmail.com).
+Telegram: [Sergey Ocheretenko](https://t.me/OcheretenkoS).  
+Email: [ocheretenko.s@gmail.com](mailto:ocheretenko.s@gmail.com).  
