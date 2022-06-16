@@ -2,7 +2,6 @@
 
 import { Scenes, Composer, session } from 'telegraf';
 
-import Currency from '../Currency.js';
 import Keyboard from '../keyboards/Keyboard.js';
 import ProductController from '../ProductController.js';
 import Session from './Session.js';
@@ -14,8 +13,7 @@ import Session from './Session.js';
 function answerTemplate(product, packageType, priceInUSD) {
     return `<b>Продукт:</b> ${product}\n` + 
         `<b>Упаковка:</b> ${packageType}\n` +
-        `<b>Ціна в USD:</b> ${priceInUSD} USD\n` + 
-        `<b>Ціна в ГРН:</b> ${Currency.convertToUAH(priceInUSD)} грн.`
+        `<b>Ціна:</b> ${priceInUSD} грн.`
 }
 
 // *************************************************************
