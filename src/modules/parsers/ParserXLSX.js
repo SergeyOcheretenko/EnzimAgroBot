@@ -6,13 +6,16 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 
 class ParserXLSX {
+    constructor(path) {
+        this._path = path;
+    }
     deleteXlsxTitle(xlsxData) {
         return xlsxData.slice(1,);
     }
 
     parseUnformattedData() {
         try {
-            const parsedData = xlsx.parse('/home/ocheretenko/Downloads/priceagro.xlsx')[0].data;
+            const parsedData = xlsx.parse(this._path)[0].data;
             const dataWithoutEmptyLines = parsedData.filter(row => row.length != 0);
             return this.deleteXlsxTitle(dataWithoutEmptyLines);
         } catch (err) {
@@ -42,4 +45,4 @@ class ParserXLSX {
     }
 }
 
-export default new ParserXLSX();
+export default new ParserXLSX('/home/ocheretenko/Downloads/priceagro.xlsx');
