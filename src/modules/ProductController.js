@@ -1,6 +1,6 @@
 'use strict';
 
-import getXlsxData from "./parsers/parser.xlsx.js";
+import ParserXLSX from "./parsers/ParserXLSX.js";
 
 Array.prototype.removeDuplicate = function() {
     const arrayWithoutDuplicate = [];
@@ -14,11 +14,11 @@ Array.prototype.removeDuplicate = function() {
 
 class ProductController {
     constructor() {
-        this._xlsxData = getXlsxData();
+        this._xlsxData = ParserXLSX.getXlsxData();
     }
 
     renderData() {
-        this._xlsxData = getXlsxData();
+        this._xlsxData = ParserXLSX.getXlsxData();
     }
 
     getTypeList() {

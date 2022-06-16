@@ -14,8 +14,11 @@ class Buttons {
 
     createButtonsTwoColumn(dataArray) {
         const len = dataArray.length;
+        if (len === 1) {
+            return this.createButtonsOneColumn(dataArray);
+        }
+
         const buttons = [];
-    
         for (let i = 1; i < len; i += 2) {
             const firstElem = dataArray[i - 1];
             const secondElem = dataArray[i];
