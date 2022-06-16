@@ -12,3 +12,7 @@
 
 Дані автоматично генеруються з системи обліку 1С у формат XLSX, який використовується для отримання даних для програми.
 **Update:** наступна версія програми буде переведена на MongoDB.
+
+### Author
+Telegram: [Sergey Ocheretenko](https://t.me/OcheretenkoS).
+Email: [ocheretenko.s@gmail.com](mailto:ocheretenko.s@gmail.com).
