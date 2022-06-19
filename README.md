@@ -47,13 +47,13 @@
 3. Третя дія: телеграм-бот запитує бажаний варіант упаковки.
 
 *Приклад запиту на обрання бажаного варіанту упаковки*:  
-<img src="https://user-images.githubusercontent.com/71709401/174485266-d0ab57f0-0b1d-4fa5-84e7-ffb5820b9673.png" style="width: 350px;">
+<img src="https://user-images.githubusercontent.com/71709401/174485266-d0ab57f0-0b1d-4fa5-84e7-ffb5820b9673.png" style="width: 250px;">
 ***
 
 4. Четверта дія: відповідь телеграм-бота на обраний препарат та бажаний варіант упаковки.
 
 *Приклад відповіді та надсилання ціни препарату*:  
-<img src="https://user-images.githubusercontent.com/71709401/174485343-df0aa88b-6d8b-4a2a-8f65-4b6714af2c12.png" style="width: 350px;">
+<img src="https://user-images.githubusercontent.com/71709401/174485343-df0aa88b-6d8b-4a2a-8f65-4b6714af2c12.png" style="width: 250px;">
 
 ### Автор
 **LinkedIn**: [Sergey Ocheretenko](https://www.linkedin.com/in/sergeyocheretenko/)
