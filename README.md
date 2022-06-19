@@ -56,5 +56,6 @@
 ![изображение](https://user-images.githubusercontent.com/71709401/174485343-df0aa88b-6d8b-4a2a-8f65-4b6714af2c12.png)
 
 ### Автор
-Telegram: [Sergey Ocheretenko](https://t.me/OcheretenkoS).  
-Email: [ocheretenko.s@gmail.com](mailto:ocheretenko.s@gmail.com).  
+**LinkedIn**: [Sergey Ocheretenko](https://www.linkedin.com/in/sergeyocheretenko/)
+**Telegram:** [@OcheretenkoS](https://t.me/OcheretenkoS).  
+**Email:** [ocheretenko.s@gmail.com](mailto:ocheretenko.s@gmail.com).  
