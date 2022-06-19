@@ -36,7 +36,7 @@
 1. Перша дія: телеграм-бот запитує потрібну категорію препаратів.
 
 *Приклад запиту на обрання категорії препаратів*:  
-<img src="https://user-images.githubusercontent.com/71709401/174485121-f00262ab-acc5-42ac-bc98-ec504345c000.png" style="width: 50px;">
+<img src="https://user-images.githubusercontent.com/71709401/174485121-f00262ab-acc5-42ac-bc98-ec504345c000.png" style="width: 500px;">
 ![изображение](https://user-images.githubusercontent.com/71709401/174485121-f00262ab-acc5-42ac-bc98-ec504345c000.png)
 ***
 2. Друга дія: телеграм-бот запитує назву потрібного препарату.
