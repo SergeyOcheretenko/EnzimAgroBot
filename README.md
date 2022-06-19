@@ -47,6 +47,6 @@
 <img src="https://user-images.githubusercontent.com/71709401/174485874-409a7c2e-3d43-4017-a7f6-019053620ad4.png">
 
 ### Автор
-**LinkedIn**: [Sergey Ocheretenko](https://www.linkedin.com/in/sergeyocheretenko/)
+**LinkedIn**: [Sergey Ocheretenko](https://www.linkedin.com/in/sergeyocheretenko/)  
 **Telegram:** [@OcheretenkoS](https://t.me/OcheretenkoS).  
 **Email:** [ocheretenko.s@gmail.com](mailto:ocheretenko.s@gmail.com).  
